@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Lexer } from '../lexer/Lexer';
-import { PensumGenerator } from '../generators/PensumGenerator';
 
 export const analyzeInput = (req: Request, res: Response) => {
     try {
@@ -25,29 +24,14 @@ export const analyzeInput = (req: Request, res: Response) => {
             });
         }
 
-        try {
-            const generator = new PensumGenerator(result.tokens);
-            const html = generator.generate();
+        // Return only the tokens for lexical analysis
+        return res.json({
+            success: true,
+            data: {
+                tokens: result.tokens
+            }
+        });
 
-            return res.json({
-                success: true,
-                data: {
-                    tokens: result.tokens,
-                    html: html
-                }
-            });
-        } catch (error: any) {
-            return res.json({
-                success: false,
-                data: {
-                    errors: [{
-                        message: error.message || 'Error desconocido',
-                        line: 0,
-                        column: 0
-                    }]
-                }
-            });
-        }
     } catch (error) {
         console.error('Error analyzing input:', error);
         return res.status(500).json({

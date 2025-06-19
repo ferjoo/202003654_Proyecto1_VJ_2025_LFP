@@ -50,5 +50,44 @@ export interface ApiError {
   errors?: Record<string, string[]>;
 }
 
+// Lexer types
+export interface Token {
+  type: string;
+  lexeme: string;
+  line: number;
+  column: number;
+}
+
+export interface LexerError {
+  message: string;
+  line: number;
+  column: number;
+}
+
+export interface LexerResponse {
+  success: boolean;
+  data?: {
+    tokens: Token[];
+    html?: string;
+  };
+  errors?: LexerError[];
+}
+
+// Lexer API functions
+export const analyzeCode = async (input: string): Promise<LexerResponse> => {
+  try {
+    const response = await api.post('/api/lexer/analyze', { input });
+    return response.data;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const axiosError = error as { response?: { data: LexerResponse } };
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+    }
+    throw error;
+  }
+};
+
 // Export the configured axios instance
 export default api; 

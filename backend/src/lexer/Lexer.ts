@@ -25,12 +25,12 @@ export class Lexer {
             this.scanToken();
         }
 
-        this.tokens.push({
-            type: TokenType.EOF,
-            lexeme: '',
-            line: this.line,
-            column: this.column
-        });
+        // this.tokens.push({
+        //     type: TokenType.EOF,
+        //     lexeme: '',
+        //     line: this.line,
+        //     column: this.column
+        // });
 
         return {
             tokens: this.tokens,
@@ -47,6 +47,8 @@ export class Lexer {
             case '}': this.addToken(TokenType.LLAVE_CERRADA); break;
             case '[': this.addToken(TokenType.CORCHETE_ABIERTO); break;
             case ']': this.addToken(TokenType.CORCHETE_CERRADO); break;
+            case '(': this.addToken(TokenType.PARENTESIS_ABIERTO); break;
+            case ')': this.addToken(TokenType.PARENTESIS_CERRADO); break;
             case ',': this.addToken(TokenType.COMA); break;
             case ';': this.addToken(TokenType.PUNTO_COMA); break;
             case ':': this.addToken(TokenType.DOS_PUNTOS); break;

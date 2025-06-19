@@ -1,7 +1,52 @@
 # Proyecto 1 - Lenguajes Formales y de Programación
 
 ## Descripción
-Este proyecto consiste en un sistema de gestión de información para un hospital, implementado como una aplicación web full-stack con frontend y backend separados.
+Este proyecto consiste en un **analizador léxico** para un lenguaje específico de definición de pensums universitarios, implementado como una aplicación web full-stack con frontend y backend separados.
+
+## Funcionalidades Principales
+
+### 🔍 Análisis Léxico
+- **Tokenización**: Convierte el código fuente en tokens individuales
+- **Detección de errores**: Identifica errores léxicos con posicionamiento preciso
+- **Tabla de tokens**: Visualización organizada de todos los tokens encontrados
+- **Colores por tipo**: Diferentes colores para cada tipo de token
+
+### 📝 Editor de Código
+- **Editor en tiempo real**: Interfaz para escribir código del pensum
+- **Contador de líneas**: Muestra el número de líneas del código
+- **Sintaxis intuitiva**: Lenguaje específico para definir pensums
+
+### 🎨 Interfaz Moderna
+- **Diseño responsivo**: Adaptable a diferentes tamaños de pantalla
+- **Animaciones**: Indicadores visuales durante el análisis
+- **Manejo de errores**: Visualización clara de errores encontrados
+
+## Lenguaje de Definición de Pensums
+
+El proyecto implementa un **lenguaje específico de dominio (DSL)** con la siguiente sintaxis:
+
+```typescript
+Carrera: "Ciencias y Sistemas" [
+    Semestre: 01 {
+        Curso: 101 {
+            Nombre: "Mate Basica 1";
+            Area: 04;
+            Prerrequisitos: ();
+        }
+        Curso: 017 {
+            Nombre: "Social Humanistica 1";
+            Area: 04;
+            Prerrequisitos: ();
+        }
+    }
+]
+```
+
+### Tokens Reconocidos
+- **Palabras reservadas**: `CARRERA`, `CURSO`, `SEMESTRE`, `NOMBRE`, `CREDITOS`, etc.
+- **Símbolos**: `{`, `}`, `[`, `]`, `:`, `=`, `,`, `;`
+- **Literales**: Cadenas de texto, números, booleanos
+- **Identificadores**: Variables y nombres personalizados
 
 ## Estructura del Proyecto
 El proyecto está dividido en dos partes principales:
@@ -16,12 +61,11 @@ Ubicado en el directorio `backend/`, es un servidor API REST desarrollado con Ex
 
 ### Frontend
 - Node.js 18
-- React 18
+- React 19
 - TypeScript
 - Vite
 - SCSS
 - Axios
-- React Router DOM
 - React Icons
 
 ### Backend
@@ -30,11 +74,6 @@ Ubicado en el directorio `backend/`, es un servidor API REST desarrollado con Ex
 - TypeScript
 - Cors
 - Dotenv
-- Morgan (para logging)
-
-## Requisitos Previos
-- Node.js 18 o superior
-- npm (incluido con Node.js)
 
 ## Instalación y Configuración
 
@@ -72,47 +111,85 @@ Ubicado en el directorio `backend/`, es un servidor API REST desarrollado con Ex
    ```
    El backend estará disponible en `http://localhost:3000`
 
-## Estructura de Archivos
+## Uso de la Aplicación
 
-### Frontend
+### 1. Escribir Código
+- Abre la aplicación en tu navegador
+- Escribe código del pensum en el editor de texto
+- El código debe seguir la sintaxis del lenguaje definido
+
+### 2. Analizar Código
+- Haz clic en el botón "Analizar" (ubicado en la esquina inferior derecha)
+- El sistema enviará el código al backend para análisis léxico
+- Se mostrará un indicador de "Analizando..." durante el proceso
+
+### 3. Ver Resultados
+- **Si no hay errores**: Se mostrará la tabla de tokens con todos los elementos encontrados
+- **Si hay errores**: Se mostrarán los errores con su posición exacta (línea y columna)
+
+### 4. Interpretar Tokens
+- **Azul**: Palabras reservadas (CARRERA, CURSO, etc.)
+- **Naranja**: Símbolos de puntuación (:, =, etc.)
+- **Verde**: Cadenas de texto
+- **Púrpura**: Llaves y corchetes
+- **Rojo**: Números y booleanos
+
+## APIs Disponibles
+
+### POST /api/lexer/analyze
+Analiza el código fuente y retorna los tokens o errores.
+
+**Request:**
+```json
+{
+  "input": "Carrera: \"Ciencias y Sistemas\" [ ... ]"
+}
 ```
-frontend/
-├── src/
-│   ├── components/     # Componentes React reutilizables
-│   ├── pages/         # Páginas principales
-│   ├── styles/        # Archivos SCSS
-│   ├── types/         # Definiciones de tipos TypeScript
-│   └── utils/         # Utilidades y helpers
-├── public/            # Archivos estáticos
-└── index.html         # Punto de entrada HTML
+
+**Response (éxito):**
+```json
+{
+  "success": true,
+  "data": {
+    "tokens": [
+      {
+        "type": "CARRERA",
+        "lexeme": "Carrera",
+        "line": 1,
+        "column": 1
+      }
+    ]
+  }
+}
 ```
 
-### Backend
+**Response (error):**
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "message": "Carácter inesperado: @",
+      "line": 1,
+      "column": 5
+    }
+  ]
+}
 ```
-backend/
-├── src/
-│   ├── routes/        # Definición de rutas API
-│   ├── controllers/   # Controladores de la lógica de negocio
-│   ├── models/        # Modelos de datos
-│   └── utils/         # Utilidades y helpers
-└── .env              # Variables de entorno
-```
 
-## Características Principales
+## Características Técnicas
 
-### Frontend
-- Interfaz de usuario moderna y responsiva
-- Navegación entre páginas con React Router
-- Estilos modulares con SCSS
-- Comunicación con el backend mediante Axios
-- Componentes reutilizables
+### Manejo de Errores
+- Detección de caracteres inesperados
+- Cadenas no terminadas
+- Posicionamiento preciso de errores
+- Respuestas estructuradas de error
 
-### Backend
-- API RESTful
-- Manejo de CORS
-- Logging de peticiones con Morgan
-- Estructura modular y escalable
+### Escalabilidad
+- Arquitectura modular
+- Separación de responsabilidades
 - Tipado fuerte con TypeScript
+- Código reutilizable
 
 ## Scripts Disponibles
 

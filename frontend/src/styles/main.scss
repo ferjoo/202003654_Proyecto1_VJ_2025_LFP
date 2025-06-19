@@ -22,14 +22,19 @@
   box-sizing: border-box;
 }
 
-body {
-  min-width: 320px;
+body, html, #root, .app, .pensum-bg {
   min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  background: #f6f8fc;
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  color: #222;
+  box-sizing: border-box;
 }
 
 #root {
   width: 100%;
-  min-height: 100vh;
   @include flex-center;
 }
 
@@ -61,5 +66,483 @@ button {
   &:focus,
   &:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
+  }
+}
+
+.pensum-header {
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 2px 8px #0001;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.pensum-header__logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+.pensum-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.pensum-header__nav a {
+  color: #3b4cca;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.pensum-header__nav a:hover {
+  color: #1a237e;
+}
+.pensum-header__menu {
+  position: relative;
+}
+.pensum-header__menu-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pensum-header__dropdown {
+  position: absolute;
+  top: 38px;
+  left: 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0002;
+  min-width: 180px;
+  z-index: 10;
+  overflow: hidden;
+}
+.pensum-header__dropdown > div {
+  padding: 12px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  transition: background 0.15s;
+}
+.pensum-header__dropdown > div:hover {
+  background: #f3f6fa;
+}
+
+.pensum-bg {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  background: #f6f8fc;
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  color: #222;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.pensum-main {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  align-items: stretch;
+  justify-content: center;
+  margin: 0;
+  position: relative;
+  min-height: 0;
+  padding: 32px;
+  height: 100%;
+}
+.pensum-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #0002;
+  padding: 28px 24px 24px 24px;
+  min-width: 420px;
+  max-width: 520px;
+  width: 100%;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.pensum-editor-card,
+.pensum-tokens-card {
+  flex: 1 1 0;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.pensum-card__header {
+  font-weight: 700;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.pensum-card__lines {
+  margin-left: auto;
+  font-size: 0.95rem;
+  color: #888;
+  background: #f3f6fa;
+  border-radius: 8px;
+  padding: 2px 12px;
+}
+.pensum-editor__textarea {
+  width: 100%;
+  flex: 1 1 0;
+  min-height: 0;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+  font-size: 1.08rem;
+  border-radius: 10px;
+  border: 1.5px solid #e0e0e0;
+  background: #f8faff;
+  color: #222;
+  padding: 16px;
+  resize: none;
+  outline: none;
+  transition: border 0.2s;
+  overflow: auto;
+  box-sizing: border-box;
+  height: 100%;
+  max-height: 100%;
+}
+.pensum-editor__textarea:focus {
+  border: 1.5px solid #3b4cca;
+  background: #f3f6fa;
+}
+.pensum-tokens-card {
+  flex: 1 1 0;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.pensum-tokens-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  
+  thead {
+    flex-shrink: 0;
+  }
+  
+  tbody {
+    flex: 1;
+    overflow-y: auto;
+    display: block;
+  }
+  
+  thead tr,
+  tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+  }
+  
+  th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  td {
+    color: #6c757d;
+    font-size: 0.9rem;
+    
+    &:first-child {
+      font-weight: 600;
+      color: #495057;
+      text-align: center;
+      min-width: 50px;
+      width: 60px;
+      background: #f8f9fa;
+    }
+    
+    &:nth-child(2),
+    &:nth-child(3) {
+      text-align: center;
+      min-width: 60px;
+      width: 80px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 0.85rem;
+      color: #6c757d;
+    }
+    
+    &:nth-child(4) {
+      min-width: 150px;
+    }
+    
+    &:nth-child(5) {
+      min-width: 120px;
+    }
+  }
+  
+  tbody tr {
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: #f8f9fa;
+    }
+    
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+  
+  .token-lexema {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    border: 1px solid #e9ecef;
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .token-label {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    min-width: 80px;
+    text-align: center;
+    
+    &.token-blue {
+      background: #e3f2fd;
+      color: #1976d2;
+      border: 1px solid #bbdefb;
+    }
+    
+    &.token-orange {
+      background: #fff3e0;
+      color: #f57c00;
+      border: 1px solid #ffcc02;
+    }
+    
+    &.token-green {
+      background: #e8f5e8;
+      color: #388e3c;
+      border: 1px solid #c8e6c9;
+    }
+    
+    &.token-purple {
+      background: #f3e5f5;
+      color: #7b1fa2;
+      border: 1px solid #e1bee7;
+    }
+    
+    &.token-red {
+      background: #ffebee;
+      color: #d32f2f;
+      border: 1px solid #ffcdd2;
+    }
+  }
+}
+.token-blue {
+  color: #1a237e;
+  background: #e3eafc;
+}
+.token-orange {
+  color: #b26a00;
+  background: #ffe0b2;
+}
+.token-green {
+  color: #1b5e20;
+  background: #c8e6c9;
+}
+.token-purple {
+  color: #6a1b9a;
+  background: #ede7f6;
+}
+.token-red {
+  color: #b71c1c;
+  background: #ffcdd2;
+}
+.token-lexema {
+  font-family: 'Fira Mono', 'Consolas', monospace;
+  background: #f3f6fa;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.98rem;
+}
+.pensum-analyze-btn-container {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 1000;
+}
+.pensum-analyze-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .spinning {
+    animation: spin 1s linear infinite;
+  }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.analyzing-indicator {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: #667eea;
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+.errors-container {
+  padding: 16px;
+  
+  h4 {
+    color: #e74c3c;
+    margin-bottom: 12px;
+    font-size: 1rem;
+  }
+  
+  .error-item {
+    background: #fdf2f2;
+    border-left: 4px solid #e74c3c;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #c0392b;
+    
+    strong {
+      color: #e74c3c;
+    }
+  }
+}
+.pensum-editor__textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 16px;
+  background: #fafbfc;
+  border-radius: 8px;
+  color: #2c3e50;
+  
+  &::placeholder {
+    color: #95a5a6;
+  }
+  
+  &:focus {
+    background: #ffffff;
+    box-shadow: inset 0 0 0 2px #667eea;
+  }
+}
+
+@media (max-width: 1100px) {
+  .pensum-main {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    height: auto;
+    min-height: 100vh;
+    padding: 0 8px;
+  }
+  .pensum-analyze-btn-container {
+    margin: 24px auto 0 auto;
+    display: block;
+    width: 100%;
+    position: static;
+  }
+  .pensum-card {
+    min-width: unset;
+    max-width: unset;
+    height: auto;
+  }
+  .pensum-editor-card,
+  .pensum-tokens-card {
+    height: 340px;
+    min-height: 0;
+    max-height: 340px;
   }
 }
