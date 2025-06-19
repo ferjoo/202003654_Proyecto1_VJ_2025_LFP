@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaTrash, FaFolderOpen, FaSave, FaSyncAlt, FaBook, FaUser, FaFileAlt } from 'react-icons/fa';
 import { analyzeCode } from '../services/api';
 import type { Token, LexerError } from '../services/api';
+import { toast } from 'react-toastify';
 
 const initialContent = `Carrera: "Ciencias y Sistemas" [
     Semestre: 01 {
@@ -99,15 +100,24 @@ const PensumEditorView: React.FC = () => {
       } else {
         setTokens([]);
         setErrors(result.errors || []);
+        if (result.errors) {
+          result.errors.forEach(error => {
+            toast.error(`Error en línea ${error.line}, columna ${error.column}: ${error.message}`);
+          });
+        } else {
+          toast.error('Ocurrió un error durante el análisis, verifica el contenido del editor o revisa la tabla de errores');
+        }
       }
     } catch (error) {
       console.error('Error analyzing code:', error);
       setTokens([]);
+      const errorMessage = 'Error de conexión con el servidor';
       setErrors([{
-        message: 'Error de conexión con el servidor',
+        message: errorMessage,
         line: 0,
         column: 0
       }]);
+      toast.error(errorMessage);
     } finally {
       setIsAnalyzing(false);
     }
@@ -170,28 +180,30 @@ const PensumEditorView: React.FC = () => {
               ))}
             </div>
           ) : (
-            <table className="pensum-tokens-table">
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Fila</th>
-                  <th>Columna</th>
-                  <th>Lexema</th>
-                  <th>Token</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tokens.map((token, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{token.line}</td>
-                    <td>{token.column}</td>
-                    <td><span className="token-lexema">{token.lexeme}</span></td>
-                    <td><span className={`token-label ${tokenColorClass[getTokenColor(token.type)]}`}>{token.type}</span></td>
+            <div className="table-container">
+              <table className="pensum-tokens-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Fila</th>
+                    <th>Columna</th>
+                    <th>Lexema</th>
+                    <th>Token</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {tokens.map((token, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{token.line}</td>
+                      <td>{token.column}</td>
+                      <td><span className="token-lexema">{token.lexeme}</span></td>
+                      <td><span className={`token-label ${tokenColorClass[getTokenColor(token.type)]}`}>{token.type}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
       </main>
