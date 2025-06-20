@@ -8,6 +8,7 @@ export class Lexer {
     private column: number;
     private tokens: Token[];
     private errors: LexerError[];
+    private bracketStack: { char: string, line: number, column: number }[];
 
     constructor(source: string) {
         this.source = source;
@@ -17,6 +18,7 @@ export class Lexer {
         this.column = 1;
         this.tokens = [];
         this.errors = [];
+        this.bracketStack = [];
     }
 
     public analyze(): { tokens: Token[], errors: LexerError[] } {
@@ -24,13 +26,11 @@ export class Lexer {
             this.start = this.current;
             this.scanToken();
         }
-
-        // this.tokens.push({
-        //     type: TokenType.EOF,
-        //     lexeme: '',
-        //     line: this.line,
-        //     column: this.column
-        // });
+        
+        if (this.bracketStack.length > 0) {
+            const lastBracket = this.bracketStack.pop()!;
+            this.addError(`Símbolo de apertura '${lastBracket.char}' en línea ${lastBracket.line} no fue cerrado.`);
+        }
 
         return {
             tokens: this.tokens,
@@ -40,15 +40,33 @@ export class Lexer {
 
     private scanToken(): void {
         const c = this.advance();
+        const startColumn = this.column -1;
 
         switch (c) {
-            // Símbolos simples
-            case '{': this.addToken(TokenType.LLAVE_ABIERTA); break;
-            case '}': this.addToken(TokenType.LLAVE_CERRADA); break;
-            case '[': this.addToken(TokenType.CORCHETE_ABIERTO); break;
-            case ']': this.addToken(TokenType.CORCHETE_CERRADO); break;
-            case '(': this.addToken(TokenType.PARENTESIS_ABIERTO); break;
-            case ')': this.addToken(TokenType.PARENTESIS_CERRADO); break;
+            case '{':
+                this.addToken(TokenType.LLAVE_ABIERTA);
+                this.bracketStack.push({ char: c, line: this.line, column: startColumn });
+                break;
+            case '}':
+                this.handleClosingBracket(c, startColumn);
+                this.addToken(TokenType.LLAVE_CERRADA);
+                break;
+            case '[':
+                this.addToken(TokenType.CORCHETE_ABIERTO);
+                this.bracketStack.push({ char: c, line: this.line, column: startColumn });
+                break;
+            case ']':
+                this.handleClosingBracket(c, startColumn);
+                this.addToken(TokenType.CORCHETE_CERRADO);
+                break;
+            case '(':
+                this.addToken(TokenType.PARENTESIS_ABIERTO);
+                this.bracketStack.push({ char: c, line: this.line, column: startColumn });
+                break;
+            case ')':
+                this.handleClosingBracket(c, startColumn);
+                this.addToken(TokenType.PARENTESIS_CERRADO);
+                break;
             case ',': this.addToken(TokenType.COMA); break;
             case ';': this.addToken(TokenType.PUNTO_COMA); break;
             case ':': this.addToken(TokenType.DOS_PUNTOS); break;
@@ -79,6 +97,31 @@ export class Lexer {
                     this.addError(`Carácter inesperado: ${c}`);
                 }
                 break;
+        }
+    }
+
+    private handleClosingBracket(c: string, column: number): void {
+        if (this.bracketStack.length === 0) {
+            this.addError(`Símbolo de cierre '${c}' inesperado en la línea ${this.line}.`);
+            return;
+        }
+
+        const lastOpen = this.bracketStack.pop()!;
+        const expectedClosing = this.getMatchingClosingBracket(lastOpen.char);
+
+        if (c !== expectedClosing) {
+            this.addError(`'${c}' en la línea ${this.line} no coincide con la apertura '${lastOpen.char}' en la línea ${lastOpen.line}.`);
+            // We put it back on the stack so the outer-most unclosed bracket is reported.
+            this.bracketStack.push(lastOpen); 
+        }
+    }
+
+    private getMatchingClosingBracket(c: string): string {
+        switch (c) {
+            case '{': return '}';
+            case '[': return ']';
+            case '(': return ')';
+            default: return '';
         }
     }
 
