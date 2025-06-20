@@ -16,6 +16,7 @@ export const useAppActions = () => {
     addApiError,
     clearApiErrors,
     setShowMenu,
+    setCurrentView,
     clearEditor,
     resetState,
   } = useAppContext();
@@ -28,6 +29,7 @@ export const useAppActions = () => {
     addApiError,
     clearApiErrors,
     setShowMenu,
+    setCurrentView,
     clearEditor,
     resetState,
   };
@@ -46,6 +48,7 @@ export const useApp = () => {
       addApiError: context.addApiError,
       clearApiErrors: context.clearApiErrors,
       setShowMenu: context.setShowMenu,
+      setCurrentView: context.setCurrentView,
       clearEditor: context.clearEditor,
       resetState: context.resetState,
     },

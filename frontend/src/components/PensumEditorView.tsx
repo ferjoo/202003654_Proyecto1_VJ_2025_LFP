@@ -1,8 +1,9 @@
 import React from 'react';
-import { FaTrash, FaFolderOpen, FaSave, FaSyncAlt, FaBook, FaUser, FaFileAlt } from 'react-icons/fa';
+import { FaTrash, FaFolderOpen, FaSave, FaSyncAlt, FaBook, FaUser, FaFileAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { analyzeCode } from '../services/api';
 import { toast } from 'react-toastify';
 import { useAppContext } from '../context/AppContext';
+import ErrorTable from './ErrorTable';
 
 type TokenColor = 'blue' | 'orange' | 'green' | 'purple' | 'red';
 
@@ -51,13 +52,14 @@ const getTokenColor = (tokenType: string): TokenColor => {
 
 const PensumEditorView: React.FC = () => {
   const {
-    state: { editorContent, tokens, lexerErrors, isAnalyzing, showMenu },
+    state: { editorContent, tokens, lexerErrors, isAnalyzing, showMenu, currentView },
     setEditorContent,
     setTokens,
     setLexerErrors,
     setAnalyzing,
     addApiError,
     setShowMenu,
+    setCurrentView,
     clearEditor,
   } = useAppContext();
 
@@ -113,6 +115,8 @@ const PensumEditorView: React.FC = () => {
     }
   };
 
+  const totalErrors = lexerErrors.length + (useAppContext().state.apiErrors.length);
+
   return (
     <div className="pensum-bg">
       {/* Menú superior */}
@@ -121,8 +125,16 @@ const PensumEditorView: React.FC = () => {
           <span className="pensum-header__logo">Pensum USAC</span>
         </div>
         <nav className="pensum-header__nav">
-          <a href="#"><FaFileAlt /> Home</a>
-          <a href="#"><FaBook /> Error Report</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('tokens'); }}>
+            <FaFileAlt /> Home
+          </a>
+          <a 
+            href="#" 
+            onClick={(e) => { e.preventDefault(); setCurrentView('errors'); }}
+            className={currentView === 'errors' ? 'active' : ''}
+          >
+            <FaExclamationTriangle /> Error Report {totalErrors > 0 && `(${totalErrors})`}
+          </a>
           <div className="pensum-header__menu">
             <button onClick={handleMenuClick} className="pensum-header__menu-btn">
               <FaFolderOpen /> Archivo <span className="arrow">▼</span>
@@ -157,52 +169,73 @@ const PensumEditorView: React.FC = () => {
         </section>
         <section className="pensum-card pensum-tokens-card">
           <div className="pensum-card__header">
-            <FaBook /> Tabla de Tokens
-            {isAnalyzing && <span className="analyzing-indicator">Analizando...</span>}
+            {currentView === 'tokens' ? (
+              <>
+                <FaBook /> Tabla de Tokens
+                {isAnalyzing && <span className="analyzing-indicator">Analizando...</span>}
+              </>
+            ) : (
+              <>
+                <FaExclamationTriangle /> Tabla de Errores
+                {totalErrors > 0 && <span className="error-count">({totalErrors} errores)</span>}
+              </>
+            )}
           </div>
-          {lexerErrors.length > 0 ? (
-            <div className="table-container">
-              <div className="table-placeholder">
-                <div className="placeholder-icon">⚠️</div>
-                <h3>No hay datos para mostrar</h3>
-                <p>Hay errores en el código que impiden el análisis léxico</p>
+          {currentView === 'tokens' ? (
+            // Vista de Tokens
+            lexerErrors.length > 0 ? (
+              <div className="table-container">
+                <div className="table-placeholder">
+                  <div className="placeholder-icon">⚠️</div>
+                  <h3>No hay datos para mostrar</h3>
+                  <p>Hay errores en el código que impiden el análisis léxico</p>
+                  <button 
+                    onClick={() => setCurrentView('errors')}
+                    className="view-errors-btn"
+                  >
+                    Ver Errores
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : tokens.length === 0 ? (
-            <div className="table-container">
-              <div className="table-placeholder">
-                <div className="placeholder-icon">📋</div>
-                <h3>Tabla de Tokens</h3>
-                <p>Haz clic en "Analizar" para ver los tokens del código</p>
+            ) : tokens.length === 0 ? (
+              <div className="table-container">
+                <div className="table-placeholder">
+                  <div className="placeholder-icon">📋</div>
+                  <h3>Tabla de Tokens</h3>
+                  <p>Haz clic en "Analizar" para ver los tokens del código</p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="table-container">
-              <table className="pensum-tokens-table">
-                <thead>
-                  <tr>
-                    <th>No.</th>
-                    <th>Fila</th>
-                    <th>Columna</th>
-                    <th>Lexema</th>
-                    <th>Token</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tokens.map((token, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{token.line}</td>
-                      <td>{token.column}</td>
-                      <td className={tokenColorClass[getTokenColor(token.type)]}>
-                        {token.lexeme}
-                      </td>
-                      <td>{token.type}</td>
+            ) : (
+              <div className="table-container">
+                <table className="pensum-tokens-table">
+                  <thead>
+                    <tr>
+                      <th>No.</th>
+                      <th>Fila</th>
+                      <th>Columna</th>
+                      <th>Lexema</th>
+                      <th>Token</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {tokens.map((token, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{token.line}</td>
+                        <td>{token.column}</td>
+                        <td className={tokenColorClass[getTokenColor(token.type)]}>
+                          {token.lexeme}
+                        </td>
+                        <td>{token.type}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
+          ) : (
+            // Vista de Errores
+            <ErrorTable />
           )}
         </section>
       </main>

@@ -19,6 +19,7 @@ export interface AppState {
   
   // UI state
   showMenu: boolean;
+  currentView: 'tokens' | 'errors';
 }
 
 // Tipos para las acciones
@@ -30,6 +31,7 @@ export type AppAction =
   | { type: 'ADD_API_ERROR'; payload: string }
   | { type: 'CLEAR_API_ERRORS' }
   | { type: 'SET_SHOW_MENU'; payload: boolean }
+  | { type: 'SET_CURRENT_VIEW'; payload: 'tokens' | 'errors' }
   | { type: 'CLEAR_EDITOR' }
   | { type: 'RESET_STATE' };
 
@@ -54,6 +56,7 @@ const initialState: AppState = {
   isAnalyzing: false,
   apiErrors: [],
   showMenu: false,
+  currentView: 'tokens',
 };
 
 // Reducer para manejar las acciones
@@ -103,6 +106,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
         showMenu: action.payload,
       };
     
+    case 'SET_CURRENT_VIEW':
+      return {
+        ...state,
+        currentView: action.payload,
+      };
+    
     case 'CLEAR_EDITOR':
       return {
         ...state,
@@ -133,6 +142,7 @@ interface AppContextType {
   addApiError: (error: string) => void;
   clearApiErrors: () => void;
   setShowMenu: (show: boolean) => void;
+  setCurrentView: (view: 'tokens' | 'errors') => void;
   clearEditor: () => void;
   resetState: () => void;
 }
@@ -176,6 +186,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_SHOW_MENU', payload: show });
   };
 
+  const setCurrentView = (view: 'tokens' | 'errors') => {
+    dispatch({ type: 'SET_CURRENT_VIEW', payload: view });
+  };
+
   const clearEditor = () => {
     dispatch({ type: 'CLEAR_EDITOR' });
   };
@@ -194,6 +208,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     addApiError,
     clearApiErrors,
     setShowMenu,
+    setCurrentView,
     clearEditor,
     resetState,
   };

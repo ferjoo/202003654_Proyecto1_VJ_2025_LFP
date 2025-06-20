@@ -29,6 +29,7 @@ interface AppState {
   
   // Estado de la UI
   showMenu: boolean;
+  currentView: 'tokens' | 'errors';
 }
 ```
 
@@ -40,10 +41,10 @@ interface AppState {
 import { useAppContext } from '../context/AppContext';
 
 const MyComponent = () => {
-  const { state, setEditorContent, addApiError } = useAppContext();
+  const { state, setEditorContent, addApiError, setCurrentView } = useAppContext();
   
   // Acceder al estado
-  const { editorContent, tokens, isAnalyzing } = state;
+  const { editorContent, tokens, isAnalyzing, currentView } = state;
   
   // Actualizar el estado
   const handleContentChange = (content: string) => {
@@ -52,6 +53,10 @@ const MyComponent = () => {
   
   const handleError = (error: string) => {
     addApiError(error);
+  };
+  
+  const switchToErrors = () => {
+    setCurrentView('errors');
   };
 };
 ```
@@ -64,20 +69,20 @@ import { useAppState, useAppActions, useApp } from '../hooks/useAppState';
 // Solo estado
 const MyComponent1 = () => {
   const state = useAppState();
-  const { editorContent, tokens } = state;
+  const { editorContent, tokens, currentView } = state;
 };
 
 // Solo acciones
 const MyComponent2 = () => {
   const actions = useAppActions();
-  const { setEditorContent, addApiError } = actions;
+  const { setEditorContent, addApiError, setCurrentView } = actions;
 };
 
 // Estado y acciones
 const MyComponent3 = () => {
   const { state, actions } = useApp();
   const { editorContent } = state;
-  const { setEditorContent } = actions;
+  const { setEditorContent, setCurrentView } = actions;
 };
 ```
 
@@ -90,6 +95,7 @@ const MyComponent3 = () => {
 - `addApiError(error: string)` - Agrega un error de API
 - `clearApiErrors()` - Limpia todos los errores de API
 - `setShowMenu(show: boolean)` - Controla la visibilidad del menú
+- `setCurrentView(view: 'tokens' | 'errors')` - Cambia entre vista de tokens y errores
 - `clearEditor()` - Limpia el editor y resultados
 - `resetState()` - Resetea todo el estado al inicial
 
@@ -98,10 +104,26 @@ const MyComponent3 = () => {
 ### ErrorDisplay.tsx
 Componente que muestra los errores de API almacenados en el contexto.
 
+### ErrorTable.tsx
+Componente que muestra una tabla completa de todos los errores (lexer y API) con formato similar a la tabla de tokens.
+
 ### Hooks personalizados
 - `useAppState()` - Acceso solo al estado
 - `useAppActions()` - Acceso solo a las acciones
 - `useApp()` - Acceso a estado y acciones
+
+## Navegación
+
+La aplicación ahora incluye navegación entre dos vistas principales:
+
+1. **Home (Tokens)** - Muestra la tabla de tokens del análisis léxico
+2. **Error Report** - Muestra la tabla de errores con contador de errores
+
+### Características de la navegación:
+- Indicador visual de la vista activa
+- Contador de errores en el enlace "Error Report"
+- Cambio dinámico entre vistas
+- Botón "Ver Errores" cuando hay errores en la vista de tokens
 
 ## Beneficios
 
@@ -109,4 +131,6 @@ Componente que muestra los errores de API almacenados en el contexto.
 2. **Reutilización**: Los datos se pueden compartir entre cualquier componente
 3. **Mantenibilidad**: Cambios en el estado se reflejan automáticamente en todos los componentes
 4. **Debugging**: Fácil seguimiento de cambios de estado
-5. **Escalabilidad**: Fácil agregar nuevas propiedades al estado global 
+5. **Escalabilidad**: Fácil agregar nuevas propiedades al estado global
+6. **Navegación intuitiva**: Cambio fácil entre vistas de tokens y errores
+7. **Gestión de errores**: Visualización clara de todos los tipos de errores 
