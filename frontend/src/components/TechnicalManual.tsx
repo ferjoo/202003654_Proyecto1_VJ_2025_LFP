@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaTimes, FaChevronLeft, FaChevronRight, FaRobot, FaCode, FaCogs, FaExclamationTriangle, FaBook, FaServer, FaDesktop, FaDatabase, FaTools, FaLightbulb, FaCheckCircle } from 'react-icons/fa';
 import { useAppContext } from '../context/AppContext';
+import AFDGraph from './AFDGraph';
 
 interface Section {
   id: string;
@@ -55,77 +56,108 @@ const TechnicalManual: React.FC = () => {
       content: (
         <div className="manual-section">
           <h2>🤖 Autómata Finito Determinista (AFD)</h2>
-          <p>El corazón del analizador léxico es un <strong>AFD</strong> que reconoce patrones léxicos del lenguaje.</p>
+          <p>El corazón del analizador léxico es un <strong>AFD</strong> que reconoce los patrones léxicos del lenguaje. El siguiente diagrama es una representación <strong>interactiva y real</strong> de la implementación.</p>
           
-          <div className="afd-diagram">
-            <h3>Diagrama de Estados del AFD</h3>
-            <div className="state-machine">
-              <div className="state initial">
-                <div className="state-content">
-                  <div className="state-title">S0</div>
-                  <div className="state-desc">Estado Inicial</div>
-                </div>
-              </div>
-              <div className="state-arrow">→</div>
-              <div className="states-row">
-                <div className="state">
-                  <div className="state-content">
-                    <div className="state-title">S1</div>
-                    <div className="state-desc">Identificador</div>
-                    <div className="state-transitions">Letra → S1</div>
-                  </div>
-                </div>
-                <div className="state">
-                  <div className="state-content">
-                    <div className="state-title">S2</div>
-                    <div className="state-desc">Número</div>
-                    <div className="state-transitions">Dígito → S2</div>
-                  </div>
-                </div>
-                <div className="state">
-                  <div className="state-content">
-                    <div className="state-title">S3</div>
-                    <div className="state-desc">Cadena</div>
-                    <div className="state-transitions">Cualquier char → S3</div>
-                  </div>
-                </div>
-                <div className="state">
-                  <div className="state-content">
-                    <div className="state-title">S4</div>
-                    <div className="state-desc">Símbolo</div>
-                    <div className="state-transitions">Acepta inmediato</div>
-                  </div>
-                </div>
-              </div>
+          <div className="afd-graph-container" style={{ height: '600px', width: '100%', marginTop: '20px', marginBottom: '20px', background: 'rgba(0,0,0,0.1)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <AFDGraph />
+          </div>
+
+          {/* Tabla de Transiciones Simplificada */}
+          <div className="transition-table">
+            <h4>Tabla de Transiciones del AFD</h4>
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Estado</th>
+                    <th>Letra/_</th>
+                    <th>Dígito</th>
+                    <th>"</th>
+                    <th>Símbolo</th>
+                    <th>Espacio</th>
+                    <th>Otro</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>S₀ (Inicial)</td>
+                    <td>S₁</td>
+                    <td>S₂</td>
+                    <td>S₃</td>
+                    <td>S₄</td>
+                    <td>S₀</td>
+                    <td>Error</td>
+                  </tr>
+                  <tr>
+                    <td>S₁ (ID)</td>
+                    <td>S₁</td>
+                    <td>S₁</td>
+                    <td>A₁</td>
+                    <td>A₁</td>
+                    <td>A₁</td>
+                    <td>A₁</td>
+                  </tr>
+                  <tr>
+                    <td>S₂ (INT)</td>
+                    <td>A₂</td>
+                    <td>S₂</td>
+                    <td>A₂</td>
+                    <td>A₂</td>
+                    <td>A₂</td>
+                    <td>A₂</td>
+                  </tr>
+                  <tr>
+                    <td>S₃ (STR)</td>
+                    <td>S₃</td>
+                    <td>S₃</td>
+                    <td>A₃</td>
+                    <td>S₃</td>
+                    <td>S₃</td>
+                    <td>S₃</td>
+                  </tr>
+                  <tr>
+                    <td>S₄ (SYM)</td>
+                    <td>A₄</td>
+                    <td>A₄</td>
+                    <td>A₄</td>
+                    <td>A₄</td>
+                    <td>A₄</td>
+                    <td>A₄</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <div className="code-example">
-            <h3>Implementación del AFD</h3>
-            <pre><code>{`private scanToken(): void {
-    const c = this.advance();
-    
-    switch (c) {
-        case '{': case '}': case '[': case ']': 
-            this.handleBrackets(c);
-            break;
-        case ',': case ';': case ':': case '=':
-            this.addToken(this.getSymbolType(c));
-            break;
-        case '"': case "'":
-            this.string(c);
-            break;
-        default:
-            if (this.isDigit(c)) {
-                this.number();
-            } else if (this.isAlpha(c)) {
-                this.identifier();
-            } else {
-                this.addError(\`Carácter inesperado: \${c}\`);
-            }
-            break;
-    }
-}`}</code></pre>
+          {/* Especificación de Tokens */}
+          <div className="token-specification">
+            <h4>Especificación de Tokens Reconocidos</h4>
+            <div className="token-specs">
+              <div className="token-spec">
+                <h5>Identificadores (ID)</h5>
+                <p>Patrón: <code>[a-zA-Z_][a-zA-Z0-9_]*</code></p>
+                <p>Ejemplos: <code>Carrera</code>, <code>curso_101</code>, <code>_nombre</code></p>
+                <p><strong>Palabras reservadas:</strong> Carrera, Curso, Semestre, Nombre, Código, Créditos, Área, Descripción, Prerrequisitos, Obligatorio, Electivo, true, false</p>
+              </div>
+              <div className="token-spec">
+                <h5>Números (NUM)</h5>
+                <p>Patrón: <code>\d+</code></p>
+                <p>Ejemplos: <code>101</code>, <code>04</code>, <code>2025</code></p>
+                <p><strong>Nota:</strong> Solo maneja números enteros</p>
+              </div>
+              <div className="token-spec">
+                <h5>Cadenas (STR)</h5>
+                <p>Patrón: <code>"[^"]*"</code></p>
+                <p>Ejemplos: <code>"Hola Mundo"</code>, <code>"Matemática Básica 1"</code></p>
+                <p><strong>Nota:</strong> No maneja secuencias de escape</p>
+              </div>
+              <div className="token-spec">
+                <h5>Símbolos (SYM)</h5>
+                <p>Patrón: <code>[{`{}[]():;,=`}]</code></p>
+                <p>Ejemplos: <code>{`{`}</code>, <code>{`}`}</code>, <code>:</code>, <code>;</code>, <code>[</code>, <code>]</code></p>
+                <p><strong>Validación:</strong> Verifica balanceo de brackets</p>
+              </div>
+            </div>
           </div>
         </div>
       )
@@ -187,6 +219,34 @@ const TechnicalManual: React.FC = () => {
                 <div className="arch-component">Analizador Léxico</div>
               </div>
             </div>
+          </div>
+
+          <div className="code-example">
+            <h3>Implementación del AFD</h3>
+            <pre><code>{`private scanToken(): void {
+    const c = this.advance();
+    
+    switch (c) {
+        case '{': case '}': case '[': case ']': 
+            this.handleBrackets(c);
+            break;
+        case ',': case ';': case ':': case '=':
+            this.addToken(this.getSymbolType(c));
+            break;
+        case '"': case "'":
+            this.string(c);
+            break;
+        default:
+            if (this.isDigit(c)) {
+                this.number();
+            } else if (this.isAlpha(c)) {
+                this.identifier();
+            } else {
+                this.addError(\`Carácter inesperado: \${c}\`);
+            }
+            break;
+    }
+}`}</code></pre>
           </div>
         </div>
       )

@@ -1,5 +1,6 @@
 import React from 'react';
 import './styles/main.scss';
+import './App.css';
 import PensumEditorView from './components/PensumEditorView';
 import ErrorDisplay from './components/ErrorDisplay';
 import TechnicalManual from './components/TechnicalManual';
@@ -7,6 +8,7 @@ import UserManual from './components/UserManual';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AppProvider } from './context/AppContext';
+import 'reactflow/dist/style.css';
 
 const App: React.FC = () => {
   return (
