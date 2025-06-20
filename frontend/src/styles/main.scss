@@ -837,6 +837,38 @@ button {
 }
 
 // Syntax Highlighted Editor Styles
+
+@mixin shared-editor-styles {
+  font-family: 'Fira Mono', 'Consolas', monospace;
+  font-size: 1.08rem;
+  line-height: 1.5;
+  letter-spacing: normal;
+  -moz-tab-size: 4;
+  tab-size: 4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 16px;
+  margin: 0;
+  box-sizing: border-box;
+  // Asegurar que el renderizado sea idéntico
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  text-transform: none;
+  text-indent: 0;
+  text-align: left;
+  vertical-align: baseline;
+  direction: ltr;
+  unicode-bidi: normal;
+  word-spacing: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
 .syntax-editor-container {
   position: relative;
   width: 100%;
@@ -855,35 +887,7 @@ button {
   }
 }
 
-.syntax-editor-highlight {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  overflow: auto;
-  z-index: 1;
-}
-
-.syntax-editor-pre {
-  margin: 0;
-  padding: 16px;
-  font-family: 'Fira Mono', 'Consolas', monospace;
-  font-size: 1.08rem;
-  line-height: 1.5;
-  color: transparent;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  background: transparent;
-  border: none;
-  outline: none;
-  resize: none;
-  box-sizing: border-box;
-  height: 100%;
-  width: 100%;
-}
-
+.syntax-editor-highlight,
 .syntax-editor-textarea {
   position: absolute;
   top: 0;
@@ -892,39 +896,107 @@ button {
   bottom: 0;
   width: 100%;
   height: 100%;
-  font-family: 'Fira Mono', 'Consolas', monospace;
-  font-size: 1.08rem;
-  line-height: 1.5;
-  border-radius: 10px;
-  border: none;
-  background: transparent;
-  color: #222;
-  padding: 16px;
-  resize: none;
-  outline: none;
   overflow: auto;
-  box-sizing: border-box;
+  
+  // Hide scrollbar for webkit browsers
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  // Hide scrollbar for Firefox
+  scrollbar-width: none;
+}
+
+.syntax-editor-highlight {
+  pointer-events: none;
+  z-index: 1;
+}
+
+.syntax-editor-pre,
+.syntax-editor-textarea {
+  @include shared-editor-styles;
+}
+
+.syntax-editor-pre {
+  width: 100%;
+  height: 100%;
+  color: transparent; // The pre text is only for spacing
+  // Asegurar que el pre tenga exactamente las mismas propiedades que el textarea
+  display: block;
+  overflow: visible;
+  // Forzar el mismo comportamiento de texto que el textarea
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+.syntax-editor-textarea {
   z-index: 2;
+  -webkit-text-fill-color: transparent;
   caret-color: #222;
+  // Asegurar que el textarea tenga exactamente las mismas propiedades que el pre
+  display: block;
+  overflow: visible;
+  // Forzar el mismo comportamiento de texto que el pre
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
   
   &::placeholder {
     color: #95a5a6;
+    -webkit-text-fill-color: initial;
   }
   
-  // Hacer el texto transparente para que se vea el resaltado
-  color: transparent;
-  
-  // Mantener el cursor visible
-  caret-color: #222;
-  
-  // Selección de texto
   &::selection {
     background: rgba(59, 76, 202, 0.2);
+    -webkit-text-fill-color: transparent;
   }
   
   &::-moz-selection {
     background: rgba(59, 76, 202, 0.2);
+    color: transparent;
   }
+}
+
+// Separate rule for the colored spans inside the pre
+.syntax-editor-pre > span {
+  -webkit-text-fill-color: initial;
+  // Asegurar que los spans no afecten el layout
+  display: inline;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  // Eliminar cualquier margen o padding que pueda causar desalineación
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  outline: none !important;
+  // Asegurar que el texto dentro de los spans se comporte igual que el textarea
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+  font-weight: inherit !important;
+  font-style: inherit !important;
+  // Asegurar que no haya transformaciones que afecten el layout
+  transform: none !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: auto !important;
+  -moz-osx-font-smoothing: auto !important;
+  // Asegurar que el texto se comporte exactamente igual que en el textarea
+  text-align: inherit !important;
+  text-indent: inherit !important;
+  text-transform: inherit !important;
+  text-decoration: inherit !important;
+  vertical-align: inherit !important;
+  direction: inherit !important;
+  unicode-bidi: inherit !important;
+  word-spacing: inherit !important;
+  hyphens: inherit !important;
+  tab-size: inherit !important;
+  -moz-tab-size: inherit !important;
 }
 
 // ============================================================================

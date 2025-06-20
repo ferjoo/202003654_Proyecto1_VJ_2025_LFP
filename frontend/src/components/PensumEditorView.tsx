@@ -38,13 +38,19 @@ const SyntaxHighlightedEditor: React.FC<{
     }
   };
 
+  // Función para obtener el texto a resaltar
+  const getHighlightText = () => {
+    const textToHighlight = value || placeholder || '';
+    return highlightText(textToHighlight);
+  };
+
   return (
     <div className="syntax-editor-container">
       <div className="syntax-editor-highlight" ref={highlightRef}>
         <pre
           className="syntax-editor-pre"
           dangerouslySetInnerHTML={{
-            __html: highlightText(value || placeholder || '')
+            __html: getHighlightText()
           }}
         />
       </div>
@@ -56,6 +62,9 @@ const SyntaxHighlightedEditor: React.FC<{
         className="syntax-editor-textarea"
         placeholder={placeholder}
         spellCheck={false}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
       />
     </div>
   );
