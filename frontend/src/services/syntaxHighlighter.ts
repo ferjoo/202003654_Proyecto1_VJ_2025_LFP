@@ -91,7 +91,7 @@ export const getTokenColor = (tokenType: string): TokenColor | undefined => {
  * @returns Una cadena de texto con formato HTML para mostrar el texto coloreado.
  */
 export const highlightText = (text: string): string => {
-  // Si el texto está vacío, no hay nada que hacer.
+  // Si el texto está vacío, retornamos el texto tal como está para que se muestre el placeholder
   if (!text.trim()) return text;
 
   // 1. Definimos las reglas de resaltado usando expresiones regulares.
@@ -146,6 +146,7 @@ export const highlightText = (text: string): string => {
   let lastIndex = 0;
   for (const match of filteredMatches) {
     // Agregamos el texto que está entre la última coincidencia y la actual (texto sin color).
+    // Este texto se mostrará en color negro por defecto
     result += text.substring(lastIndex, match.start);
     // Agregamos el texto de la coincidencia, envuelto en un <span> con su clase de color.
     result += `<span class="${tokenColorClass[match.color]}">${text.substring(match.start, match.end)}</span>`;
@@ -154,6 +155,7 @@ export const highlightText = (text: string): string => {
   }
 
   // 6. Agregamos cualquier texto restante después de la última coincidencia.
+  // Este texto también se mostrará en color negro por defecto
   result += text.substring(lastIndex);
 
   return result;

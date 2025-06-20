@@ -919,7 +919,7 @@ button {
 .syntax-editor-pre {
   width: 100%;
   height: 100%;
-  color: transparent; // The pre text is only for spacing
+  color: #222; // Color negro por defecto para texto no resaltado
   // Asegurar que el pre tenga exactamente las mismas propiedades que el textarea
   display: block;
   overflow: visible;
@@ -928,6 +928,14 @@ button {
   word-wrap: break-word !important;
   word-break: normal !important;
   overflow-wrap: normal !important;
+  
+  // Mostrar el placeholder cuando no hay contenido
+  &:empty::before {
+    content: attr(data-placeholder);
+    color: #95a5a6;
+    -webkit-text-fill-color: initial;
+    pointer-events: none;
+  }
 }
 
 .syntax-editor-textarea {

@@ -41,6 +41,10 @@ const SyntaxHighlightedEditor: React.FC<{
   // Función para obtener el texto a resaltar
   const getHighlightText = () => {
     const textToHighlight = value || placeholder || '';
+    // Si no hay valor y hay placeholder, usamos el placeholder para el resaltado
+    if (!value && placeholder) {
+      return highlightText(placeholder);
+    }
     return highlightText(textToHighlight);
   };
 
@@ -49,6 +53,7 @@ const SyntaxHighlightedEditor: React.FC<{
       <div className="syntax-editor-highlight" ref={highlightRef}>
         <pre
           className="syntax-editor-pre"
+          data-placeholder={placeholder}
           dangerouslySetInnerHTML={{
             __html: getHighlightText()
           }}
