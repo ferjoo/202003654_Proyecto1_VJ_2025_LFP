@@ -1,23 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FaTrash, FaFolderOpen, FaSave, FaSyncAlt, FaBook, FaUser, FaFileAlt } from 'react-icons/fa';
 import { analyzeCode } from '../services/api';
-import type { Token, LexerError } from '../services/api';
 import { toast } from 'react-toastify';
-
-const initialContent = `Carrera: "Ciencias y Sistemas" [
-    Semestre: 01 {
-        Curso: 101 {
-            Nombre: "Mate Basica 1";
-            Area: 04;
-            Prerrequisitos: ();
-        }
-        Curso: 017 {
-            Nombre: "Social Humanistica 1";
-            Area: 04;
-            Prerrequisitos: ();
-        }
-    }
-]`;
+import { useAppContext } from '../context/AppContext';
 
 type TokenColor = 'blue' | 'orange' | 'green' | 'purple' | 'red';
 
@@ -65,47 +50,50 @@ const getTokenColor = (tokenType: string): TokenColor => {
 };
 
 const PensumEditorView: React.FC = () => {
-  const [content, setContent] = useState(initialContent);
-  const [tokens, setTokens] = useState<Token[]>([]);
-  const [errors, setErrors] = useState<LexerError[]>([]);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+  const {
+    state: { editorContent, tokens, lexerErrors, isAnalyzing, showMenu },
+    setEditorContent,
+    setTokens,
+    setLexerErrors,
+    setAnalyzing,
+    addApiError,
+    setShowMenu,
+    clearEditor,
+  } = useAppContext();
 
-  const handleMenuClick = () => setShowMenu((v) => !v);
+  const handleMenuClick = () => setShowMenu(!showMenu);
   
   const handleMenuAction = (action: string) => {
     setShowMenu(false);
     if (action === 'clear') {
-      setContent('');
-      setTokens([]);
-      setErrors([]);
+      clearEditor();
     }
     // Implement load/save as needed
   };
 
   const handleAnalyze = async () => {
-    if (!content.trim()) {
+    if (!editorContent.trim()) {
       setTokens([]);
-      setErrors([]);
+      setLexerErrors([]);
       return;
     }
 
-    setIsAnalyzing(true);
+    setAnalyzing(true);
     try {
-      const result = await analyzeCode(content);
+      const result = await analyzeCode(editorContent);
       
       if (result.success && result.data) {
         setTokens(result.data.tokens);
-        setErrors([]);
       } else {
         setTokens([]);
         if (result.errors && result.errors.length > 0) {
-          setErrors(result.errors);
+          setLexerErrors(result.errors);
           result.errors.forEach(error => {
             toast.error(`Error en línea ${error.line}, columna ${error.column}: ${error.message}`);
           });
         } else {
-          setErrors([{ message: 'Análisis fallido.', line: 0, column: 0 }]);
+          const errorMessage = 'Análisis fallido.';
+          setLexerErrors([{ message: errorMessage, line: 0, column: 0 }]);
           toast.error('Ocurrió un error durante el análisis, verifica el contenido del editor o revisa la tabla de errores');
         }
       }
@@ -113,14 +101,15 @@ const PensumEditorView: React.FC = () => {
       console.error('Error analyzing code:', error);
       setTokens([]);
       const errorMessage = 'Error de conexión con el servidor';
-      setErrors([{
+      setLexerErrors([{
         message: errorMessage,
         line: 0,
         column: 0
       }]);
+      addApiError(errorMessage);
       toast.error(errorMessage);
     } finally {
-      setIsAnalyzing(false);
+      setAnalyzing(false);
     }
   };
 
@@ -156,11 +145,11 @@ const PensumEditorView: React.FC = () => {
         <section className="pensum-card pensum-editor-card">
           <div className="pensum-card__header">
             <FaFileAlt /> Editor de Texto
-            <span className="pensum-card__lines">Líneas: {content.split('\n').length}</span>
+            <span className="pensum-card__lines">Líneas: {editorContent.split('\n').length}</span>
           </div>
           <textarea
-            value={content}
-            onChange={e => setContent(e.target.value)}
+            value={editorContent}
+            onChange={e => setEditorContent(e.target.value)}
             className="pensum-editor__textarea"
             rows={14}
             placeholder="Escribe tu código aquí..."
@@ -171,7 +160,7 @@ const PensumEditorView: React.FC = () => {
             <FaBook /> Tabla de Tokens
             {isAnalyzing && <span className="analyzing-indicator">Analizando...</span>}
           </div>
-          {errors.length > 0 ? (
+          {lexerErrors.length > 0 ? (
             <div className="table-container">
               <div className="table-placeholder">
                 <div className="placeholder-icon">⚠️</div>
@@ -205,8 +194,10 @@ const PensumEditorView: React.FC = () => {
                       <td>{index + 1}</td>
                       <td>{token.line}</td>
                       <td>{token.column}</td>
-                      <td><span className="token-lexema">{token.lexeme}</span></td>
-                      <td><span className={`token-label ${tokenColorClass[getTokenColor(token.type)]}`}>{token.type}</span></td>
+                      <td className={tokenColorClass[getTokenColor(token.type)]}>
+                        {token.lexeme}
+                      </td>
+                      <td>{token.type}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -215,16 +206,23 @@ const PensumEditorView: React.FC = () => {
           )}
         </section>
       </main>
-      <div className="pensum-analyze-btn-container">
-        <button 
-          className="pensum-analyze-btn" 
+
+      {/* Botón de análisis */}
+      <div className="pensum-actions">
+        <button
           onClick={handleAnalyze}
           disabled={isAnalyzing}
+          className="pensum-analyze-btn"
         >
-          <div className={isAnalyzing ? 'spinning' : ''}>
-            <FaSyncAlt />
-          </div>
-          {isAnalyzing ? 'Analizando...' : 'Analizar'}
+          {isAnalyzing ? (
+            <>
+              <FaSyncAlt /> Analizando...
+            </>
+          ) : (
+            <>
+              <FaBook /> Analizar
+            </>
+          )}
         </button>
       </div>
     </div>
