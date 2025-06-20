@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { FaTrash, FaFolderOpen, FaSave, FaSyncAlt, FaBook, FaUser, FaFileAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { analyzeCode } from '../services/api';
 import { toast } from 'react-toastify';
@@ -51,6 +51,8 @@ const getTokenColor = (tokenType: string): TokenColor => {
 };
 
 const PensumEditorView: React.FC = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const {
     state: { editorContent, tokens, lexerErrors, isAnalyzing, showMenu, currentView },
     setEditorContent,
@@ -65,12 +67,54 @@ const PensumEditorView: React.FC = () => {
 
   const handleMenuClick = () => setShowMenu(!showMenu);
   
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Verificar que sea un archivo .plfp
+    if (!file.name.toLowerCase().endsWith('.plfp')) {
+      toast.error('Por favor selecciona un archivo .plfp válido');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      if (content) {
+        setEditorContent(content);
+        toast.success(`Archivo ${file.name} cargado exitosamente`);
+      }
+    };
+    reader.onerror = () => {
+      toast.error('Error al leer el archivo');
+    };
+    reader.readAsText(file);
+
+    // Limpiar el input para permitir cargar el mismo archivo nuevamente
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleMenuAction = (action: string) => {
     setShowMenu(false);
     if (action === 'clear') {
       clearEditor();
+    } else if (action === 'load') {
+      fileInputRef.current?.click();
+    } else if (action === 'save') {
+      // Implementar guardado de archivo
+      const blob = new Blob([editorContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'pensum.plfp';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Archivo guardado exitosamente');
     }
-    // Implement load/save as needed
   };
 
   const handleAnalyze = async () => {
@@ -119,6 +163,15 @@ const PensumEditorView: React.FC = () => {
 
   return (
     <div className="pensum-bg">
+      {/* Input file oculto para cargar archivos */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".plfp"
+        onChange={handleFileUpload}
+        style={{ display: 'none' }}
+      />
+      
       {/* Menú superior */}
       <header className="pensum-header">
         <div className="pensum-header__left">

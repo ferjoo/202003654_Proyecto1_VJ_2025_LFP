@@ -1,0 +1,316 @@
+Carrera: "Ingeniería en Ciencias y Sistemas" [
+    Semestre: 01 {
+        Curso: 101 {
+            Nombre: "Matemática Básica 1";
+            Codigo: "MAT101";
+            Creditos: 4;
+            Area: "Matemática";
+            Descripcion: "Fundamentos de álgebra, trigonometría y geometría analítica";
+            Prerrequisitos: ();
+            Obligatorio: true;
+        }
+        Curso: 017 {
+            Nombre: "Social Humanística 1";
+            Codigo: "SH017";
+            Creditos: 3;
+            Area: "Social Humanística";
+            Descripcion: "Introducción a las ciencias sociales y humanidades";
+            Prerrequisitos: ();
+            Obligatorio: true;
+        }
+        Curso: 102 {
+            Nombre: "Matemática Básica 2";
+            Codigo: "MAT102";
+            Creditos: 4;
+            Area: "Matemática";
+            Descripcion: "Cálculo diferencial e integral de una variable";
+            Prerrequisitos: (101);
+            Obligatorio: true;
+        }
+        Curso: 103 {
+            Nombre: "Física Básica";
+            Codigo: "FIS103";
+            Creditos: 4;
+            Area: "Física";
+            Descripcion: "Mecánica clásica, termodinámica y ondas";
+            Prerrequisitos: (101, 102);
+            Obligatorio: true;
+        }
+    }
+    
+    Semestre: 02 {
+        Curso: 104 {
+            Nombre: "Matemática Básica 3";
+            Codigo: "MAT104";
+            Creditos: 4;
+            Area: "Matemática";
+            Descripcion: "Cálculo vectorial y ecuaciones diferenciales";
+            Prerrequisitos: (102);
+            Obligatorio: true;
+        }
+        Curso: 105 {
+            Nombre: "Física 2";
+            Codigo: "FIS105";
+            Creditos: 4;
+            Area: "Física";
+            Descripcion: "Electricidad, magnetismo y óptica";
+            Prerrequisitos: (103);
+            Obligatorio: true;
+        }
+        Curso: 106 {
+            Nombre: "Introducción a la Programación";
+            Codigo: "PROG106";
+            Creditos: 5;
+            Area: "Programación";
+            Descripcion: "Fundamentos de programación estructurada";
+            Prerrequisitos: ();
+            Obligatorio: true;
+        }
+        Curso: 018 {
+            Nombre: "Social Humanística 2";
+            Codigo: "SH018";
+            Creditos: 3;
+            Area: "Social Humanística";
+            Descripcion: "Historia y filosofía de la ciencia";
+            Prerrequisitos: (017);
+            Obligatorio: true;
+        }
+    }
+    
+    Semestre: 03 {
+        Curso: 107 {
+            Nombre: "Matemática Discreta";
+            Codigo: "MAT107";
+            Creditos: 4;
+            Area: "Matemática";
+            Descripcion: "Lógica matemática, teoría de conjuntos y combinatoria";
+            Prerrequisitos: (104);
+            Obligatorio: true;
+        }
+        Curso: 108 {
+            Nombre: "Programación Orientada a Objetos";
+            Codigo: "PROG108";
+            Creditos: 5;
+            Area: "Programación";
+            Descripcion: "Paradigmas de programación orientada a objetos";
+            Prerrequisitos: (106);
+            Obligatorio: true;
+        }
+        Curso: 109 {
+            Nombre: "Estructuras de Datos";
+            Codigo: "ED109";
+            Creditos: 5;
+            Area: "Algoritmos";
+            Descripcion: "Implementación y análisis de estructuras de datos";
+            Prerrequisitos: (108);
+            Obligatorio: true;
+        }
+        Curso: 110 {
+            Nombre: "Estadística 1";
+            Codigo: "EST110";
+            Creditos: 4;
+            Area: "Estadística";
+            Descripcion: "Estadística descriptiva e inferencial básica";
+            Prerrequisitos: (104);
+            Obligatorio: true;
+        }
+    }
+    
+    Semestre: 04 {
+        Curso: 111 {
+            Nombre: "Análisis Numérico";
+            Codigo: "MAT111";
+            Creditos: 4;
+            Area: "Matemática";
+            Descripcion: "Métodos numéricos para resolución de problemas";
+            Prerrequisitos: (104, 110);
+            Obligatorio: true;
+        }
+        Curso: 112 {
+            Nombre: "Algoritmos y Estructuras de Datos";
+            Codigo: "AED112";
+            Creditos: 5;
+            Area: "Algoritmos";
+            Descripcion: "Análisis de algoritmos y complejidad computacional";
+            Prerrequisitos: (109);
+            Obligatorio: true;
+        }
+        Curso: 113 {
+            Nombre: "Bases de Datos 1";
+            Codigo: "BD113";
+            Creditos: 5;
+            Area: "Bases de Datos";
+            Descripcion: "Modelado y diseño de bases de datos relacionales";
+            Prerrequisitos: (108);
+            Obligatorio: true;
+        }
+        Curso: 114 {
+            Nombre: "Arquitectura de Computadoras";
+            Codigo: "ARQ114";
+            Creditos: 4;
+            Area: "Hardware";
+            Descripcion: "Organización y arquitectura de sistemas computacionales";
+            Prerrequisitos: (106);
+            Obligatorio: true;
+        }
+    }
+    
+    Semestre: 05 {
+        Curso: 115 {
+            Nombre: "Sistemas Operativos";
+            Codigo: "SO115";
+            Creditos: 5;
+            Area: "Sistemas";
+            Descripcion: "Gestión de procesos, memoria y archivos";
+            Prerrequisitos: (114);
+            Obligatorio: true;
+        }
+        Curso: 116 {
+            Nombre: "Redes de Computadoras";
+            Codigo: "RED116";
+            Creditos: 4;
+            Area: "Redes";
+            Descripcion: "Protocolos de comunicación y arquitectura de redes";
+            Prerrequisitos: (114);
+            Obligatorio: true;
+        }
+        Curso: 117 {
+            Nombre: "Ingeniería de Software 1";
+            Codigo: "IS117";
+            Creditos: 5;
+            Area: "Ingeniería de Software";
+            Descripcion: "Metodologías de desarrollo y ciclo de vida del software";
+            Prerrequisitos: (108, 113);
+            Obligatorio: true;
+        }
+        Curso: 118 {
+            Nombre: "Programación Web";
+            Codigo: "WEB118";
+            Creditos: 4;
+            Area: "Programación";
+            Descripcion: "Desarrollo de aplicaciones web frontend y backend";
+            Prerrequisitos: (108);
+            Obligatorio: true;
+        }
+    }
+    
+    Semestre: 06 {
+        Curso: 119 {
+            Nombre: "Bases de Datos 2";
+            Codigo: "BD119";
+            Creditos: 4;
+            Area: "Bases de Datos";
+            Descripcion: "Bases de datos avanzadas y optimización";
+            Prerrequisitos: (113);
+            Obligatorio: true;
+        }
+        Curso: 120 {
+            Nombre: "Inteligencia Artificial";
+            Codigo: "IA120";
+            Creditos: 5;
+            Area: "Inteligencia Artificial";
+            Descripcion: "Algoritmos de búsqueda, aprendizaje automático y redes neuronales";
+            Prerrequisitos: (112, 110);
+            Obligatorio: true;
+        }
+        Curso: 121 {
+            Nombre: "Compiladores 1";
+            Codigo: "COMP121";
+            Creditos: 4;
+            Area: "Lenguajes";
+            Descripcion: "Análisis léxico, sintáctico y semántico";
+            Prerrequisitos: (112, 107);
+            Obligatorio: true;
+        }
+        Curso: 122 {
+            Nombre: "Ingeniería de Software 2";
+            Codigo: "IS122";
+            Creditos: 5;
+            Area: "Ingeniería de Software";
+            Descripcion: "Patrones de diseño y arquitectura de software";
+            Prerrequisitos: (117);
+            Obligatorio: true;
+        }
+    }
+    
+    Semestre: 07 {
+        Curso: 123 {
+            Nombre: "Sistemas Distribuidos";
+            Codigo: "SD123";
+            Creditos: 4;
+            Area: "Sistemas";
+            Descripcion: "Arquitecturas distribuidas y computación paralela";
+            Prerrequisitos: (115, 116);
+            Obligatorio: true;
+        }
+        Curso: 124 {
+            Nombre: "Seguridad Informática";
+            Codigo: "SEG124";
+            Creditos: 4;
+            Area: "Seguridad";
+            Descripcion: "Criptografía, autenticación y protección de sistemas";
+            Prerrequisitos: (115, 116);
+            Obligatorio: true;
+        }
+        Curso: 125 {
+            Nombre: "Compiladores 2";
+            Codigo: "COMP125";
+            Creditos: 4;
+            Area: "Lenguajes";
+            Descripcion: "Generación de código y optimización";
+            Prerrequisitos: (121);
+            Obligatorio: true;
+        }
+        Curso: 126 {
+            Nombre: "Proyecto de Software";
+            Codigo: "PS126";
+            Creditos: 6;
+            Area: "Proyectos";
+            Descripcion: "Desarrollo de un proyecto de software completo";
+            Prerrequisitos: (122, 118);
+            Obligatorio: true;
+        }
+    }
+    
+    Semestre: 08 {
+        Curso: 127 {
+            Nombre: "Seminario de Investigación";
+            Codigo: "SI127";
+            Creditos: 3;
+            Area: "Investigación";
+            Descripcion: "Metodología de investigación en computación";
+            Prerrequisitos: (120);
+            Obligatorio: true;
+        }
+        Curso: 128 {
+            Nombre: "Trabajo de Graduación";
+            Codigo: "TG128";
+            Creditos: 8;
+            Area: "Graduación";
+            Descripcion: "Proyecto final de graduación";
+            Prerrequisitos: (127);
+            Obligatorio: true;
+        }
+        Curso: 129 {
+            Nombre: "Ética Profesional";
+            Codigo: "ET129";
+            Creditos: 3;
+            Area: "Ética";
+            Descripcion: "Responsabilidad social y ética en la computación";
+            Prerrequisitos: ();
+            Obligatorio: true;
+        }
+    }
+    
+    Semestre: 09 {
+        Curso: 130 {
+            Nombre: "Cursos Electivos";
+            Codigo: "CE130";
+            Creditos: 12;
+            Area: "Electivos";
+            Descripcion: "Cursos electivos de especialización";
+            Prerrequisitos: ();
+            Obligatorio: false;
+        }
+    }
+] 
