@@ -99,12 +99,13 @@ const PensumEditorView: React.FC = () => {
         setErrors([]);
       } else {
         setTokens([]);
-        setErrors(result.errors || []);
-        if (result.errors) {
+        if (result.errors && result.errors.length > 0) {
+          setErrors(result.errors);
           result.errors.forEach(error => {
             toast.error(`Error en línea ${error.line}, columna ${error.column}: ${error.message}`);
           });
         } else {
+          setErrors([{ message: 'Análisis fallido.', line: 0, column: 0 }]);
           toast.error('Ocurrió un error durante el análisis, verifica el contenido del editor o revisa la tabla de errores');
         }
       }
@@ -171,13 +172,20 @@ const PensumEditorView: React.FC = () => {
             {isAnalyzing && <span className="analyzing-indicator">Analizando...</span>}
           </div>
           {errors.length > 0 ? (
-            <div className="errors-container">
-              <h4>Errores encontrados:</h4>
-              {errors.map((error, index) => (
-                <div key={index} className="error-item">
-                  <strong>Línea {error.line}, Columna {error.column}:</strong> {error.message}
-                </div>
-              ))}
+            <div className="table-container">
+              <div className="table-placeholder">
+                <div className="placeholder-icon">⚠️</div>
+                <h3>No hay datos para mostrar</h3>
+                <p>Hay errores en el código que impiden el análisis léxico</p>
+              </div>
+            </div>
+          ) : tokens.length === 0 ? (
+            <div className="table-container">
+              <div className="table-placeholder">
+                <div className="placeholder-icon">📋</div>
+                <h3>Tabla de Tokens</h3>
+                <p>Haz clic en "Analizar" para ver los tokens del código</p>
+              </div>
             </div>
           ) : (
             <div className="table-container">

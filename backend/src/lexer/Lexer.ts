@@ -26,7 +26,7 @@ export class Lexer {
             this.start = this.current;
             this.scanToken();
         }
-        
+
         if (this.bracketStack.length > 0) {
             const lastBracket = this.bracketStack.pop()!;
             this.addError(`Símbolo de apertura '${lastBracket.char}' en línea ${lastBracket.line} no fue cerrado.`);

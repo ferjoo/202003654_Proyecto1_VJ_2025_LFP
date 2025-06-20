@@ -25,12 +25,12 @@ export const analyzeInput = (req: Request, res: Response) => {
         }
 
         // Return only the tokens for lexical analysis
-        return res.json({
-            success: true,
-            data: {
+            return res.json({
+                success: true,
+                data: {
                 tokens: result.tokens
-            }
-        });
+                }
+            });
 
     } catch (error) {
         console.error('Error analyzing input:', error);
