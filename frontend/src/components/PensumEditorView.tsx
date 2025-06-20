@@ -1,53 +1,64 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { FaTrash, FaFolderOpen, FaSave, FaSyncAlt, FaBook, FaUser, FaFileAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { analyzeCode } from '../services/api';
 import { toast } from 'react-toastify';
 import { useAppContext } from '../context/AppContext';
 import ErrorTable from './ErrorTable';
+import { highlightText, getTokenColor, tokenColorClass } from '../services/syntaxHighlighter';
 
-type TokenColor = 'blue' | 'orange' | 'green' | 'purple' | 'red';
+// Componente del editor con resaltado
+const SyntaxHighlightedEditor: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}> = ({ value, onChange, placeholder }) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const highlightRef = useRef<HTMLDivElement>(null);
 
-const tokenColorClass: Record<TokenColor, string> = {
-  blue: 'token-blue',
-  orange: 'token-orange',
-  green: 'token-green',
-  purple: 'token-purple',
-  red: 'token-red',
-};
+  useEffect(() => {
+    if (textareaRef.current && highlightRef.current) {
+      const textarea = textareaRef.current;
+      const highlight = highlightRef.current;
+      
+      // Sincronizar scroll
+      highlight.scrollTop = textarea.scrollTop;
+      highlight.scrollLeft = textarea.scrollLeft;
+    }
+  }, [value]);
 
-const getTokenColor = (tokenType: string): TokenColor => {
-  switch (tokenType) {
-    case 'CARRERA':
-    case 'CURSO':
-    case 'SEMESTRE':
-    case 'NOMBRE':
-    case 'CREDITOS':
-    case 'PREREQUISITO':
-    case 'CODIGO':
-    case 'DESCRIPCION':
-    case 'OBLIGATORIO':
-    case 'ELECTIVO':
-      return 'blue';
-    case 'DOS_PUNTOS':
-    case 'IGUAL':
-    case 'COMA':
-    case 'PUNTO_COMA':
-      return 'orange';
-    case 'CADENA':
-      return 'green';
-    case 'LLAVE_ABIERTA':
-    case 'LLAVE_CERRADA':
-    case 'CORCHETE_ABIERTO':
-    case 'CORCHETE_CERRADO':
-    case 'PARENTESIS_ABIERTO':
-    case 'PARENTESIS_CERRADO':
-      return 'purple';
-    case 'NUMERO':
-    case 'BOOLEANO':
-      return 'red';
-    default:
-      return 'blue';
-  }
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    onChange(newValue);
+  };
+
+  const handleScroll = () => {
+    if (textareaRef.current && highlightRef.current) {
+      highlightRef.current.scrollTop = textareaRef.current.scrollTop;
+      highlightRef.current.scrollLeft = textareaRef.current.scrollLeft;
+    }
+  };
+
+  return (
+    <div className="syntax-editor-container">
+      <div className="syntax-editor-highlight" ref={highlightRef}>
+        <pre
+          className="syntax-editor-pre"
+          dangerouslySetInnerHTML={{
+            __html: highlightText(value || placeholder || '')
+          }}
+        />
+      </div>
+      <textarea
+        ref={textareaRef}
+        value={value}
+        onChange={handleInput}
+        onScroll={handleScroll}
+        className="syntax-editor-textarea"
+        placeholder={placeholder}
+        spellCheck={false}
+      />
+    </div>
+  );
 };
 
 const PensumEditorView: React.FC = () => {
@@ -212,11 +223,9 @@ const PensumEditorView: React.FC = () => {
             <FaFileAlt /> Editor de Texto
             <span className="pensum-card__lines">Líneas: {editorContent.split('\n').length}</span>
           </div>
-          <textarea
+          <SyntaxHighlightedEditor
             value={editorContent}
-            onChange={e => setEditorContent(e.target.value)}
-            className="pensum-editor__textarea"
-            rows={14}
+            onChange={setEditorContent}
             placeholder="Escribe tu código aquí..."
           />
         </section>
@@ -276,7 +285,7 @@ const PensumEditorView: React.FC = () => {
                         <td>{index + 1}</td>
                         <td>{token.line}</td>
                         <td>{token.column}</td>
-                        <td className={tokenColorClass[getTokenColor(token.type)]}>
+                        <td className={getTokenColor(token.type) ? tokenColorClass[getTokenColor(token.type)!] : ''}>
                           {token.lexeme}
                         </td>
                         <td>{token.type}</td>
