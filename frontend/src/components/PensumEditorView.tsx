@@ -74,6 +74,8 @@ const PensumEditorView: React.FC = () => {
     setShowMenu,
     setCurrentView,
     clearEditor,
+    setShowTechnicalManual,
+    setShowUserManual,
   } = useAppContext();
 
   const handleMenuClick = () => setShowMenu(!showMenu);
@@ -211,8 +213,12 @@ const PensumEditorView: React.FC = () => {
               </div>
             )}
           </div>
-          <a href="#"><FaBook /> Manual Técnico</a>
-          <a href="#"><FaUser /> Manual de Usuario</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowTechnicalManual(true); }}>
+            <FaBook /> Manual Técnico
+          </a>
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowUserManual(true); }}>
+            <FaUser /> Manual de Usuario
+          </a>
         </nav>
       </header>
 

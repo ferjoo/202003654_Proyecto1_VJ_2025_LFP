@@ -20,6 +20,8 @@ export interface AppState {
   // UI state
   showMenu: boolean;
   currentView: 'tokens' | 'errors';
+  showTechnicalManual: boolean;
+  showUserManual: boolean;
 }
 
 // Tipos para las acciones
@@ -32,6 +34,8 @@ export type AppAction =
   | { type: 'CLEAR_API_ERRORS' }
   | { type: 'SET_SHOW_MENU'; payload: boolean }
   | { type: 'SET_CURRENT_VIEW'; payload: 'tokens' | 'errors' }
+  | { type: 'SET_SHOW_TECHNICAL_MANUAL'; payload: boolean }
+  | { type: 'SET_SHOW_USER_MANUAL'; payload: boolean }
   | { type: 'CLEAR_EDITOR' }
   | { type: 'RESET_STATE' };
 
@@ -57,6 +61,8 @@ const initialState: AppState = {
   apiErrors: [],
   showMenu: false,
   currentView: 'tokens',
+  showTechnicalManual: false,
+  showUserManual: false,
 };
 
 // Reducer para manejar las acciones
@@ -112,6 +118,18 @@ function appReducer(state: AppState, action: AppAction): AppState {
         currentView: action.payload,
       };
     
+    case 'SET_SHOW_TECHNICAL_MANUAL':
+      return {
+        ...state,
+        showTechnicalManual: action.payload,
+      };
+    
+    case 'SET_SHOW_USER_MANUAL':
+      return {
+        ...state,
+        showUserManual: action.payload,
+      };
+    
     case 'CLEAR_EDITOR':
       return {
         ...state,
@@ -143,6 +161,8 @@ interface AppContextType {
   clearApiErrors: () => void;
   setShowMenu: (show: boolean) => void;
   setCurrentView: (view: 'tokens' | 'errors') => void;
+  setShowTechnicalManual: (show: boolean) => void;
+  setShowUserManual: (show: boolean) => void;
   clearEditor: () => void;
   resetState: () => void;
 }
@@ -190,6 +210,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_CURRENT_VIEW', payload: view });
   };
 
+  const setShowTechnicalManual = (show: boolean) => {
+    dispatch({ type: 'SET_SHOW_TECHNICAL_MANUAL', payload: show });
+  };
+
+  const setShowUserManual = (show: boolean) => {
+    dispatch({ type: 'SET_SHOW_USER_MANUAL', payload: show });
+  };
+
   const clearEditor = () => {
     dispatch({ type: 'CLEAR_EDITOR' });
   };
@@ -209,6 +237,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     clearApiErrors,
     setShowMenu,
     setCurrentView,
+    setShowTechnicalManual,
+    setShowUserManual,
     clearEditor,
     resetState,
   };
