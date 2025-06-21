@@ -102,7 +102,9 @@ export class Lexer {
                 } else if (this.isAlpha(c)) {
                     this.identifier();
                 } else {
-                    this.addError(`Carácter inesperado: ${c}`);
+                    // Handle invalid characters more gracefully - just skip them
+                    // but log a warning instead of throwing an error
+                    console.warn(`Carácter inesperado ignorado: '${c}' en línea ${this.line}, columna ${this.column}`);
                 }
                 break;
         }
@@ -171,11 +173,14 @@ export class Lexer {
         const text = this.source.substring(this.start, this.current);
         let type = TokenType.IDENTIFICADOR;
 
-        // Palabras reservadas
-        switch (text.toUpperCase()) {
+        // Palabras reservadas - case insensitive matching
+        const upperText = text.toUpperCase();
+        switch (upperText) {
             case 'CARRERA': type = TokenType.CARRERA; break;
             case 'CURSO': type = TokenType.CURSO; break;
-            case 'PREREQUISITO': type = TokenType.PREREQUISITO; break;
+            case 'PREREQUISITO': 
+            case 'PRERREQUISITOS': 
+            case 'PREREQUISITOS': type = TokenType.PREREQUISITO; break;
             case 'CREDITOS': type = TokenType.CREDITOS; break;
             case 'SEMESTRE': type = TokenType.SEMESTRE; break;
             case 'NOMBRE': type = TokenType.NOMBRE; break;
@@ -183,6 +188,7 @@ export class Lexer {
             case 'DESCRIPCION': type = TokenType.DESCRIPCION; break;
             case 'OBLIGATORIO': type = TokenType.OBLIGATORIO; break;
             case 'ELECTIVO': type = TokenType.ELECTIVO; break;
+            case 'AREA': type = TokenType.IDENTIFICADOR; break; // Area can be number or string
             case 'TRUE':
             case 'FALSE':
                 type = TokenType.BOOLEANO;

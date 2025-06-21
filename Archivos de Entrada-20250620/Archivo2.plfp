@@ -1,0 +1,9 @@
+Carrera: @"Industr%al" {
+    Sem3stre: 01 {
+        Curso: &101 {
+            Nombre: "Mate B@sica 1":
+            Area: 02;
+            Prerrequisitos: ();
+        }
+    }
+>

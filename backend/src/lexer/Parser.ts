@@ -60,17 +60,38 @@ export class Parser {
         this.consume(TokenType.CADENA, "Se esperaba el nombre de la carrera");
         this.pensum.carrera = this.previous().lexeme.replace(/"/g, '');
         
+        // Handle both bracket styles: [ and {
         if (this.match(TokenType.CORCHETE_ABIERTO)) {
             this.advance(); // Consumir '['
             while (!this.check(TokenType.CORCHETE_CERRADO) && !this.isAtEnd()) {
                 if (this.match(TokenType.SEMESTRE)) {
                     this.parseSemestre();
+                } else if (this.match(TokenType.CARRERA)) {
+                    // Handle multiple careers in one file
+                    console.log('Encontrada nueva carrera en el mismo archivo');
+                    this.parseCarrera();
                 } else {
                     this.advance();
                 }
             }
             if (this.match(TokenType.CORCHETE_CERRADO)) {
                 this.advance(); // Consumir ']'
+            }
+        } else if (this.match(TokenType.LLAVE_ABIERTA)) {
+            this.advance(); // Consumir '{'
+            while (!this.check(TokenType.LLAVE_CERRADA) && !this.isAtEnd()) {
+                if (this.match(TokenType.SEMESTRE)) {
+                    this.parseSemestre();
+                } else if (this.match(TokenType.CARRERA)) {
+                    // Handle multiple careers in one file
+                    console.log('Encontrada nueva carrera en el mismo archivo');
+                    this.parseCarrera();
+                } else {
+                    this.advance();
+                }
+            }
+            if (this.match(TokenType.LLAVE_CERRADA)) {
+                this.advance(); // Consumir '}'
             }
         }
     }
@@ -135,13 +156,14 @@ export class Parser {
                 console.log('Encontrado OBLIGATORIO');
                 this.parseObligatorio(curso);
             } else if (this.match(TokenType.PREREQUISITO) || this.match(TokenType.IDENTIFICADOR)) {
-                // Verificar si es "Prerrequisitos" o "Prerequisito"
+                // Verificar si es "Prerrequisitos" o "Prerequisito" (with different spellings)
                 const token = this.previous();
                 console.log(`Encontrado identificador: ${token.lexeme}`);
-                if (token.lexeme.toLowerCase() === 'prerrequisitos' || token.lexeme.toLowerCase() === 'prerequisito') {
+                const lowerLexeme = token.lexeme.toLowerCase();
+                if (lowerLexeme === 'prerrequisitos' || lowerLexeme === 'prerequisito' || lowerLexeme === 'prerequisitos') {
                     console.log('Parseando prerrequisitos');
                     this.parsePrerrequisitos(curso);
-                } else if (token.lexeme.toLowerCase() === 'area') {
+                } else if (lowerLexeme === 'area') {
                     console.log('Encontrado AREA');
                     this.parseArea(curso);
                 } else {
@@ -173,7 +195,13 @@ export class Parser {
         this.consume(TokenType.DOS_PUNTOS, "Se esperaba ':' después de NOMBRE");
         this.consume(TokenType.CADENA, "Se esperaba el nombre del curso");
         curso.nombre = this.previous().lexeme.replace(/"/g, '');
-        this.consume(TokenType.PUNTO_COMA, "Se esperaba ';' después del nombre");
+        
+        // Try to consume semicolon, but don't fail if missing
+        if (this.check(TokenType.PUNTO_COMA)) {
+            this.advance(); // Consumir ';'
+        } else {
+            console.warn(`Semicolon missing after Nombre: ${curso.nombre}`);
+        }
     }
 
     private parsePrerrequisitos(curso: Curso): void {
@@ -237,9 +265,22 @@ export class Parser {
 
     private parseArea(curso: Curso): void {
         this.consume(TokenType.DOS_PUNTOS, "Se esperaba ':' después de AREA");
-        this.consume(TokenType.CADENA, "Se esperaba el área del curso");
-        curso.area = this.previous().lexeme.replace(/"/g, '');
-        this.consume(TokenType.PUNTO_COMA, "Se esperaba ';' después del área");
+        
+        // Area can be either a number or a string
+        if (this.match(TokenType.NUMERO)) {
+            curso.area = this.previous().lexeme;
+        } else if (this.match(TokenType.CADENA)) {
+            curso.area = this.previous().lexeme.replace(/"/g, '');
+        } else {
+            throw new Error("Se esperaba un número o cadena para el área");
+        }
+        
+        // Try to consume semicolon, but don't fail if missing
+        if (this.check(TokenType.PUNTO_COMA)) {
+            this.advance(); // Consumir ';'
+        } else {
+            console.warn(`Semicolon missing after Area: ${curso.area}`);
+        }
     }
 
     // Métodos auxiliares
@@ -270,6 +311,20 @@ export class Parser {
         }
         
         const currentToken = this.peek();
+        
+        // Try to recover from common syntax errors
+        if (type === TokenType.PUNTO_COMA && currentToken.type === TokenType.IDENTIFICADOR) {
+            // Skip missing semicolon and continue
+            console.warn(`Semicolon missing, continuing with next field: ${currentToken.lexeme}`);
+            return this.advance();
+        }
+        
+        if (type === TokenType.CADENA && currentToken.type === TokenType.NUMERO) {
+            // Allow numbers where strings are expected (for Area field)
+            console.warn(`Expected string but found number: ${currentToken.lexeme}`);
+            return this.advance();
+        }
+        
         throw new Error(`${message} - Encontrado: ${currentToken.type} '${currentToken.lexeme}' en línea ${currentToken.line}`);
     }
 
