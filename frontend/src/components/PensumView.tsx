@@ -148,9 +148,6 @@ const PensumView: React.FC = () => {
   // Obtener todos los semestres ordenados
   const semestres = pensum.semestres.sort((a, b) => a.semestre - b.semestre);
   
-  // Obtener el número máximo de cursos por semestre para el layout de la tabla
-  const maxCursosPorSemestre = Math.max(...semestres.map(s => s.cursos.length));
-  
   // Crear un mapa de cursos para búsqueda rápida
   const cursosMap = new Map<string, Curso>();
   pensum.cursos.forEach(curso => {
@@ -234,55 +231,39 @@ const PensumView: React.FC = () => {
           <p>Haz clic en cualquier curso para ver sus prerrequisitos resaltados en verde</p>
         </div>
         
-        <div className="pensum-table-container">
-          <table className="pensum-table">
-            <thead>
-              <tr>
-                <th>Semestre</th>
-                {Array.from({ length: maxCursosPorSemestre }, (_, i) => (
-                  <th key={i}>Curso {i + 1}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {semestres.map(semestre => (
-                <tr key={semestre.semestre}>
-                  <td className="semestre-cell">
-                    <strong>Semestre {semestre.semestre.toString().padStart(2, '0')}</strong>
-                  </td>
-                  {Array.from({ length: maxCursosPorSemestre }, (_, i) => {
-                    const curso = semestre.cursos[i];
-                    if (!curso) {
-                      return <td key={i} className="empty-cell"></td>;
-                    }
-                    
-                    const isResaltado = isCursoResaltado(curso.codigo);
-                    const isSelected = selectedCourse === curso.codigo;
-                    
-                    return (
-                      <td key={i} className="curso-cell">
-                        <div 
-                          className={`curso-card ${isResaltado ? 'resaltado' : ''} ${isSelected ? 'seleccionado' : ''}`}
-                          onClick={() => setSelectedCourse(isSelected ? null : curso.codigo)}
-                        >
-                          <div className="curso-codigo">{curso.codigo}</div>
-                          <div className="curso-nombre">{curso.nombre}</div>
-                          {curso.creditos && (
-                            <div className="curso-creditos">{curso.creditos} créditos</div>
-                          )}
-                          {curso.prerrequisitos.length > 0 && (
-                            <div className="curso-prerrequisitos">
-                              Prerreq: {curso.prerrequisitos.join(', ')}
-                            </div>
-                          )}
+        <div className="pensum-grid-container">
+          {semestres.map(semestre => (
+            <div key={semestre.semestre} className="semestre-section">
+              <div className="semestre-header">
+                <h3>Semestre {semestre.semestre.toString().padStart(2, '0')}</h3>
+              </div>
+              <div className="cursos-grid">
+                {semestre.cursos.map((curso, index) => {
+                  const isResaltado = isCursoResaltado(curso.codigo);
+                  const isSelected = selectedCourse === curso.codigo;
+                  
+                  return (
+                    <div 
+                      key={`${semestre.semestre}-${index}`}
+                      className={`curso-card ${isResaltado ? 'resaltado' : ''} ${isSelected ? 'seleccionado' : ''}`}
+                      onClick={() => setSelectedCourse(isSelected ? null : curso.codigo)}
+                    >
+                      <div className="curso-codigo">{curso.codigo}</div>
+                      <div className="curso-nombre">{curso.nombre}</div>
+                      {curso.creditos && (
+                        <div className="curso-creditos">{curso.creditos} créditos</div>
+                      )}
+                      {curso.prerrequisitos.length > 0 && (
+                        <div className="curso-prerrequisitos">
+                          Prerreq: {curso.prerrequisitos.join(', ')}
                         </div>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
