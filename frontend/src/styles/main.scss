@@ -3188,9 +3188,11 @@ button {
 // Estilos para el componente PensumView
 .pensum-view-container {
   min-height: 100vh;
+  width: 100vw;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
 }
 
 .pensum-view-header {
@@ -3435,12 +3437,13 @@ button {
 
 // Nuevos estilos para el layout de grid
 .pensum-grid-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
   gap: 30px;
   max-height: calc(100vh - 300px);
   overflow-y: auto;
   padding-right: 10px;
+  width: 100%;
   
   &::-webkit-scrollbar {
     width: 8px;
@@ -3458,6 +3461,22 @@ button {
     &:hover {
       background: rgba(102, 126, 234, 0.5);
     }
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+  
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
+  }
+  
+  @media (min-width: 1600px) {
+    grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
+  }
+  
+  @media (min-width: 2000px) {
+    grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
   }
 }
 
