@@ -90,6 +90,7 @@ export interface LexerResponse {
     tokens: Token[];
     pensum?: Pensum;
     html?: string;
+    errors?: LexerError[];
   };
   errors?: LexerError[];
 }

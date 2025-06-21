@@ -3440,28 +3440,7 @@ button {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
   gap: 30px;
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
-  padding-right: 10px;
   width: 100%;
-  
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.3);
-    border-radius: 4px;
-    
-    &:hover {
-      background: rgba(102, 126, 234, 0.5);
-    }
-  }
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -3507,20 +3486,24 @@ button {
 
 .cursos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 15px;
-  max-width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
   
   @media (min-width: 1200px) {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   }
   
   @media (min-width: 1600px) {
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+  
+  @media (min-width: 2000px) {
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   }
 }
 
@@ -3543,5 +3526,272 @@ button {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
   }
+}
+
+// Estilos para la tabla de errores mejorada
+.errors-summary {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  
+  h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0;
+    opacity: 0.9;
+  }
+}
+
+.pensum-errors-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  
+  th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+  }
+  
+  td {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: top;
+  }
+  
+  .error-number {
+    font-weight: 700;
+    color: #667eea;
+    text-align: center;
+    min-width: 50px;
+  }
+  
+  .error-location {
+    min-width: 150px;
+  }
+  
+  .location-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    
+    svg {
+      font-size: 10px;
+    }
+  }
+  
+  .location-unknown {
+    color: #999;
+    font-style: italic;
+    font-size: 12px;
+  }
+  
+  .error-message {
+    font-weight: 500;
+    color: #333;
+    max-width: 400px;
+    word-wrap: break-word;
+  }
+  
+  .error-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    
+    &.error-type-lexer {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+      color: white;
+    }
+    
+    &.error-type-api {
+      background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+      color: white;
+    }
+  }
+  
+  .error-source {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    
+    &.error-source-lexer {
+      background: rgba(255, 107, 107, 0.1);
+      color: #d32f2f;
+    }
+    
+    &.error-source-api {
+      background: rgba(255, 167, 38, 0.1);
+      color: #f57c00;
+    }
+  }
+  
+  .error-row {
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: #f8f9fa;
+    }
+    
+    &.error-lexer {
+      border-left: 4px solid #ff6b6b;
+    }
+    
+    &.error-api {
+      border-left: 4px solid #ffa726;
+    }
+  }
+}
+
+.errors-debug {
+  margin-top: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  
+  details {
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 10px;
+      
+      &:hover {
+        color: #764ba2;
+      }
+    }
+    
+    pre {
+      background: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+      font-size: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  }
+}
+
+// Estilos para múltiples carreras
+.careers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+  max-height: calc(100vh - 400px);
+  overflow-y: auto;
+  padding-right: 10px;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.3);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(102, 126, 234, 0.5);
+    }
+  }
+}
+
+.career-section {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  flex-shrink: 0;
+  
+  &:nth-child(1) {
+    border-color: rgba(102, 126, 234, 0.3);
+  }
+  
+  &:nth-child(2) {
+    border-color: rgba(76, 175, 80, 0.3);
+  }
+  
+  &:nth-child(3) {
+    border-color: rgba(255, 193, 7, 0.3);
+  }
+  
+  &:nth-child(4) {
+    border-color: rgba(244, 67, 54, 0.3);
+  }
+}
+
+.career-header {
+  margin-bottom: 25px;
+  text-align: center;
+  
+  h3 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    display: inline-block;
+  }
+}
+
+// Ajustar el grid de semestres para múltiples carreras
+.career-section .pensum-grid-container {
+  max-height: none;
+  overflow-y: visible;
+  padding-right: 0;
+}
+
+.career-section .semestre-section {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.career-section .semestre-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 15px;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 

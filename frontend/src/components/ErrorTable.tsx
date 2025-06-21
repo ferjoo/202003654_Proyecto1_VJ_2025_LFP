@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaExclamationTriangle, FaTimes } from 'react-icons/fa';
+import { FaExclamationTriangle, FaTimes, FaMapMarkerAlt } from 'react-icons/fa';
 import { useAppContext } from '../context/AppContext';
 
 interface ErrorItem {
@@ -44,13 +44,17 @@ const ErrorTable: React.FC = () => {
 
   return (
     <div className="table-container">
+      <div className="errors-summary">
+        <h3>Errores Encontrados ({allErrors.length})</h3>
+        <p>Revisa la tabla para ver los detalles de cada error</p>
+      </div>
+      
       <table className="pensum-errors-table">
         <thead>
           <tr>
             <th>No.</th>
             <th>Tipo</th>
-            <th>Fila</th>
-            <th>Columna</th>
+            <th>Ubicación</th>
             <th>Mensaje</th>
             <th>Origen</th>
           </tr>
@@ -58,15 +62,23 @@ const ErrorTable: React.FC = () => {
         <tbody>
           {allErrors.map((error, index) => (
             <tr key={`${error.source}-${error.id || index}`} className={`error-row error-${error.source}`}>
-              <td>{index + 1}</td>
+              <td className="error-number">{index + 1}</td>
               <td>
                 <span className={`error-type error-type-${error.source}`}>
                   {error.source === 'lexer' ? <FaExclamationTriangle /> : <FaTimes />}
                   {error.type}
                 </span>
               </td>
-              <td>{error.line > 0 ? error.line : '-'}</td>
-              <td>{error.column > 0 ? error.column : '-'}</td>
+              <td className="error-location">
+                {error.line > 0 && error.column > 0 ? (
+                  <span className="location-badge">
+                    <FaMapMarkerAlt />
+                    Línea {error.line}, Columna {error.column}
+                  </span>
+                ) : (
+                  <span className="location-unknown">Ubicación desconocida</span>
+                )}
+              </td>
               <td className="error-message">{error.message}</td>
               <td>
                 <span className={`error-source error-source-${error.source}`}>
@@ -77,6 +89,13 @@ const ErrorTable: React.FC = () => {
           ))}
         </tbody>
       </table>
+      
+      <div className="errors-debug">
+        <details>
+          <summary>Información de Depuración</summary>
+          <pre>{JSON.stringify(allErrors, null, 2)}</pre>
+        </details>
+      </div>
     </div>
   );
 };

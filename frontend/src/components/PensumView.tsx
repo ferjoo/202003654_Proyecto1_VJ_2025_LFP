@@ -21,6 +21,10 @@ interface Pensum {
   cursos: Curso[];
 }
 
+interface MultiCareerPensum {
+  careers: Pensum[];
+}
+
 const PensumView: React.FC = () => {
   const {
     state: { editorContent, selectedCourse },
@@ -28,28 +32,47 @@ const PensumView: React.FC = () => {
     setSelectedCourse,
   } = useAppContext();
 
-  // Función simple para parsear el texto del editor
-  const parsePensumFromText = (text: string): Pensum | null => {
+  // Función para parsear múltiples carreras del texto del editor
+  const parseMultiCareerPensumFromText = (text: string): MultiCareerPensum | null => {
     try {
+      console.log('Parsing text:', text.substring(0, 200) + '...');
       const lines = text.split('\n');
-      const pensum: Pensum = {
-        carrera: '',
-        semestres: [],
-        cursos: []
+      const multiCareerPensum: MultiCareerPensum = {
+        careers: []
       };
 
+      let currentPensum: Pensum | null = null;
       let currentSemestre: number | null = null;
       let currentCurso: Curso | null = null;
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
         
-        // Buscar carrera
+        // Buscar nueva carrera
         if (line.startsWith('Carrera:')) {
+          console.log('Found career:', line);
+          // Si ya teníamos una carrera, guardarla
+          if (currentPensum) {
+            console.log('Saving previous career:', currentPensum.carrera);
+            multiCareerPensum.careers.push(currentPensum);
+          }
+          
           const match = line.match(/Carrera:\s*"([^"]+)"/);
           if (match) {
-            pensum.carrera = match[1];
+            currentPensum = {
+              carrera: match[1],
+              semestres: [],
+              cursos: []
+            };
+            currentSemestre = null;
+            currentCurso = null;
+            console.log('Created new career:', match[1]);
           }
+        }
+        
+        // Si no tenemos una carrera actual, continuar
+        if (!currentPensum) {
+          continue;
         }
         
         // Buscar semestre
@@ -57,10 +80,11 @@ const PensumView: React.FC = () => {
           const match = line.match(/Semestre:\s*(\d+)/);
           if (match) {
             currentSemestre = parseInt(match[1]);
-            pensum.semestres.push({
+            currentPensum.semestres.push({
               semestre: currentSemestre,
               cursos: []
             });
+            console.log('Found semester:', currentSemestre);
           }
         }
         
@@ -75,6 +99,7 @@ const PensumView: React.FC = () => {
               prerrequisitos: [],
               semestre: currentSemestre
             };
+            console.log('Found course:', match[1]);
           }
         }
         
@@ -83,6 +108,7 @@ const PensumView: React.FC = () => {
           const match = line.match(/Nombre:\s*"([^"]+)"/);
           if (match) {
             currentCurso.nombre = match[1];
+            console.log('Course name:', match[1]);
           }
         }
         
@@ -91,6 +117,7 @@ const PensumView: React.FC = () => {
           const match = line.match(/(?:Area|Creditos):\s*(\d+)/);
           if (match) {
             currentCurso.creditos = parseInt(match[1]);
+            console.log('Course credits/area:', match[1]);
           }
         }
         
@@ -99,30 +126,43 @@ const PensumView: React.FC = () => {
           const match = line.match(/Prerrequisitos:\s*\(([^)]*)\)/);
           if (match && match[1].trim()) {
             currentCurso.prerrequisitos = match[1].split(',').map(p => p.trim()).filter(p => p);
+            console.log('Course prerequisites:', currentCurso.prerrequisitos);
           }
         }
         
         // Si encontramos el cierre del curso, agregarlo
         if (line === '}' && currentCurso) {
-          pensum.cursos.push(currentCurso);
-          const semestreIndex = pensum.semestres.findIndex(s => s.semestre === currentSemestre);
+          currentPensum.cursos.push(currentCurso);
+          const semestreIndex = currentPensum.semestres.findIndex(s => s.semestre === currentSemestre);
           if (semestreIndex !== -1) {
-            pensum.semestres[semestreIndex].cursos.push(currentCurso);
+            currentPensum.semestres[semestreIndex].cursos.push(currentCurso);
           }
+          console.log('Added course:', currentCurso.codigo, 'to semester:', currentSemestre);
           currentCurso = null;
         }
       }
 
-      return pensum.carrera && pensum.semestres.length > 0 ? pensum : null;
+      // Agregar la última carrera si existe
+      if (currentPensum) {
+        console.log('Saving last career:', currentPensum.carrera);
+        multiCareerPensum.careers.push(currentPensum);
+      }
+
+      console.log('Final result:', multiCareerPensum);
+      return multiCareerPensum.careers.length > 0 ? multiCareerPensum : null;
     } catch (error) {
-      console.error('Error parsing pensum:', error);
+      console.error('Error parsing multi-career pensum:', error);
       return null;
     }
   };
 
-  const pensum = parsePensumFromText(editorContent);
+  const multiCareerPensum = parseMultiCareerPensumFromText(editorContent);
 
-  if (!pensum) {
+  // Debug: Show what we're working with
+  console.log('Editor content length:', editorContent.length);
+  console.log('Multi career pensum result:', multiCareerPensum);
+
+  if (!multiCareerPensum) {
     return (
       <div className="pensum-view-container">
         <div className="pensum-view-header">
@@ -139,19 +179,32 @@ const PensumView: React.FC = () => {
             <FaGraduationCap />
             <h3>No hay pensum disponible</h3>
             <p>Analiza el código primero para generar el pensum</p>
+            <details style={{ marginTop: '20px', textAlign: 'left' }}>
+              <summary>Debug Info</summary>
+              <pre style={{ 
+                background: '#f5f5f5', 
+                padding: '10px', 
+                borderRadius: '5px',
+                fontSize: '12px',
+                maxHeight: '200px',
+                overflow: 'auto'
+              }}>
+                Content length: {editorContent.length}
+                First 500 chars: {editorContent.substring(0, 500)}
+              </pre>
+            </details>
           </div>
         </div>
       </div>
     );
   }
 
-  // Obtener todos los semestres ordenados
-  const semestres = pensum.semestres.sort((a, b) => a.semestre - b.semestre);
-  
-  // Crear un mapa de cursos para búsqueda rápida
+  // Crear un mapa de cursos para búsqueda rápida (todos los cursos de todas las carreras)
   const cursosMap = new Map<string, Curso>();
-  pensum.cursos.forEach(curso => {
-    cursosMap.set(curso.codigo, curso);
+  multiCareerPensum.careers.forEach(career => {
+    career.cursos.forEach(curso => {
+      cursosMap.set(curso.codigo, curso);
+    });
   });
 
   // Función para obtener todos los prerrequisitos de un curso (incluyendo los de los prerrequisitos)
@@ -183,14 +236,17 @@ const PensumView: React.FC = () => {
 
   // Función para descargar el pensum como CSV
   const descargarPensum = () => {
-    let csvContent = 'Semestre,Código,Nombre,Créditos,Prerrequisitos\n';
+    let csvContent = 'Carrera,Semestre,Código,Nombre,Créditos,Prerrequisitos\n';
     
-    semestres.forEach(semestre => {
-      semestre.cursos.forEach(curso => {
-        const prerrequisitos = curso.prerrequisitos.length > 0 
-          ? curso.prerrequisitos.join(', ') 
-          : 'Ninguno';
-        csvContent += `${semestre.semestre},${curso.codigo},"${curso.nombre}",${curso.creditos || 0},"${prerrequisitos}"\n`;
+    multiCareerPensum.careers.forEach(career => {
+      const semestres = career.semestres.sort((a, b) => a.semestre - b.semestre);
+      semestres.forEach(semestre => {
+        semestre.cursos.forEach(curso => {
+          const prerrequisitos = curso.prerrequisitos.length > 0 
+            ? curso.prerrequisitos.join(', ') 
+            : 'Ninguno';
+          csvContent += `"${career.carrera}",${semestre.semestre},${curso.codigo},"${curso.nombre}",${curso.creditos || 0},"${prerrequisitos}"\n`;
+        });
       });
     });
     
@@ -198,7 +254,7 @@ const PensumView: React.FC = () => {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `pensum_${pensum.carrera.replace(/\s+/g, '_')}.csv`);
+    link.setAttribute('download', `pensum_multiple_carreras.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -216,7 +272,7 @@ const PensumView: React.FC = () => {
         </button>
         <div className="pensum-view-title">
           <FaGraduationCap />
-          <h2>Pensum: {pensum.carrera}</h2>
+          <h2>Pensum: {multiCareerPensum.careers.length} Carrera{multiCareerPensum.careers.length > 1 ? 's' : ''}</h2>
         </div>
         <button 
           onClick={descargarPensum}
@@ -231,39 +287,53 @@ const PensumView: React.FC = () => {
           <p>Haz clic en cualquier curso para ver sus prerrequisitos resaltados en verde</p>
         </div>
         
-        <div className="pensum-grid-container">
-          {semestres.map(semestre => (
-            <div key={semestre.semestre} className="semestre-section">
-              <div className="semestre-header">
-                <h3>Semestre {semestre.semestre.toString().padStart(2, '0')}</h3>
-              </div>
-              <div className="cursos-grid">
-                {semestre.cursos.map((curso, index) => {
-                  const isResaltado = isCursoResaltado(curso.codigo);
-                  const isSelected = selectedCourse === curso.codigo;
-                  
-                  return (
-                    <div 
-                      key={`${semestre.semestre}-${index}`}
-                      className={`curso-card ${isResaltado ? 'resaltado' : ''} ${isSelected ? 'seleccionado' : ''}`}
-                      onClick={() => setSelectedCourse(isSelected ? null : curso.codigo)}
-                    >
-                      <div className="curso-codigo">{curso.codigo}</div>
-                      <div className="curso-nombre">{curso.nombre}</div>
-                      {curso.creditos && (
-                        <div className="curso-creditos">{curso.creditos} créditos</div>
-                      )}
-                      {curso.prerrequisitos.length > 0 && (
-                        <div className="curso-prerrequisitos">
-                          Prerreq: {curso.prerrequisitos.join(', ')}
-                        </div>
-                      )}
+        <div className="careers-container">
+          {multiCareerPensum.careers.map((career, careerIndex) => {
+            const semestres = career.semestres.sort((a, b) => a.semestre - b.semestre);
+            
+            return (
+              <div key={careerIndex} className="career-section">
+                <div className="career-header">
+                  <h3>{career.carrera}</h3>
+                </div>
+                
+                <div className="pensum-grid-container">
+                  {semestres.map(semestre => (
+                    <div key={semestre.semestre} className="semestre-section">
+                      <div className="semestre-header">
+                        <h4>Semestre {semestre.semestre.toString().padStart(2, '0')}</h4>
+                      </div>
+                      <div className="cursos-grid">
+                        {semestre.cursos.map((curso, index) => {
+                          const isResaltado = isCursoResaltado(curso.codigo);
+                          const isSelected = selectedCourse === curso.codigo;
+                          
+                          return (
+                            <div 
+                              key={`${careerIndex}-${semestre.semestre}-${index}`}
+                              className={`curso-card ${isResaltado ? 'resaltado' : ''} ${isSelected ? 'seleccionado' : ''}`}
+                              onClick={() => setSelectedCourse(isSelected ? null : curso.codigo)}
+                            >
+                              <div className="curso-codigo">{curso.codigo}</div>
+                              <div className="curso-nombre">{curso.nombre}</div>
+                              {curso.creditos && (
+                                <div className="curso-creditos">{curso.creditos} créditos</div>
+                              )}
+                              {curso.prerrequisitos.length > 0 && (
+                                <div className="curso-prerrequisitos">
+                                  Prerreq: {curso.prerrequisitos.join(', ')}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

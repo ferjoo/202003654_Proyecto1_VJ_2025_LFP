@@ -165,9 +165,11 @@ const PensumEditorView: React.FC = () => {
       } else {
         setTokens([]);
         setPensum(null);
-        if (result.errors && result.errors.length > 0) {
-          setLexerErrors(result.errors);
-          result.errors.forEach(error => {
+        // Check for errors in both top level and nested under data
+        const errors = result.errors || result.data?.errors || [];
+        if (errors.length > 0) {
+          setLexerErrors(errors);
+          errors.forEach(error => {
             toast.error(`Error en línea ${error.line}, columna ${error.column}: ${error.message}`);
           });
         } else {
