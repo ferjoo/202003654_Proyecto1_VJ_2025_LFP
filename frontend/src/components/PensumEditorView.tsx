@@ -1,9 +1,10 @@
 import React, { useRef, useEffect } from 'react';
-import { FaTrash, FaFolderOpen, FaSave, FaSyncAlt, FaBook, FaUser, FaFileAlt, FaExclamationTriangle } from 'react-icons/fa';
+import { FaTrash, FaFolderOpen, FaSave, FaSyncAlt, FaBook, FaUser, FaFileAlt, FaExclamationTriangle, FaGraduationCap } from 'react-icons/fa';
 import { analyzeCode } from '../services/api';
 import { toast } from 'react-toastify';
 import { useAppContext } from '../context/AppContext';
 import ErrorTable from './ErrorTable';
+import PensumView from './PensumView';
 import { highlightText, getTokenColor, tokenColorClass } from '../services/syntaxHighlighter';
 
 // Componente del editor con resaltado
@@ -79,10 +80,11 @@ const PensumEditorView: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const {
-    state: { editorContent, tokens, lexerErrors, isAnalyzing, showMenu, currentView },
+    state: { editorContent, tokens, lexerErrors, isAnalyzing, showMenu, currentView, pensum },
     setEditorContent,
     setTokens,
     setLexerErrors,
+    setPensum,
     setAnalyzing,
     addApiError,
     setShowMenu,
@@ -148,6 +150,7 @@ const PensumEditorView: React.FC = () => {
     if (!editorContent.trim()) {
       setTokens([]);
       setLexerErrors([]);
+      setPensum(null);
       return;
     }
 
@@ -157,8 +160,11 @@ const PensumEditorView: React.FC = () => {
       
       if (result.success && result.data) {
         setTokens(result.data.tokens);
+        // No necesitamos el pensum del backend, lo parseamos en el frontend
+        toast.success('Análisis completado exitosamente. El pensum está listo para visualizar.');
       } else {
         setTokens([]);
+        setPensum(null);
         if (result.errors && result.errors.length > 0) {
           setLexerErrors(result.errors);
           result.errors.forEach(error => {
@@ -173,6 +179,7 @@ const PensumEditorView: React.FC = () => {
     } catch (error) {
       console.error('Error analyzing code:', error);
       setTokens([]);
+      setPensum(null);
       const errorMessage = 'Error de conexión con el servidor';
       setLexerErrors([{
         message: errorMessage,
@@ -187,6 +194,11 @@ const PensumEditorView: React.FC = () => {
   };
 
   const totalErrors = lexerErrors.length + (useAppContext().state.apiErrors.length);
+
+  // Si la vista actual es pensum, mostrar el componente PensumView
+  if (currentView === 'pensum') {
+    return <PensumView />;
+  }
 
   return (
     <div className="pensum-bg">
@@ -215,6 +227,14 @@ const PensumEditorView: React.FC = () => {
           >
             <FaExclamationTriangle /> Error Report {totalErrors > 0 && `(${totalErrors})`}
           </a>
+          {lexerErrors.length === 0 && tokens.length > 0 && (
+            <button
+              onClick={() => setCurrentView('pensum')}
+              className="pensum-download-btn"
+            >
+              <FaGraduationCap /> Ver Pensum
+            </button>
+          )}
           <div className="pensum-header__menu">
             <button onClick={handleMenuClick} className="pensum-header__menu-btn">
               <FaFolderOpen /> Archivo <span className="arrow">▼</span>
@@ -256,10 +276,15 @@ const PensumEditorView: React.FC = () => {
                 <FaBook /> Tabla de Tokens
                 {isAnalyzing && <span className="analyzing-indicator">Analizando...</span>}
               </>
-            ) : (
+            ) : currentView === 'errors' ? (
               <>
                 <FaExclamationTriangle /> Tabla de Errores
                 {totalErrors > 0 && <span className="error-count">({totalErrors} errores)</span>}
+              </>
+            ) : (
+              <>
+                <FaBook /> Tabla de Tokens
+                {isAnalyzing && <span className="analyzing-indicator">Analizando...</span>}
               </>
             )}
           </div>
@@ -322,7 +347,7 @@ const PensumEditorView: React.FC = () => {
         </section>
       </main>
 
-      {/* Botón de análisis */}
+      {/* Botón de análisis y descarga de pensum */}
       <div className="pensum-actions">
         <button
           onClick={handleAnalyze}
@@ -339,6 +364,15 @@ const PensumEditorView: React.FC = () => {
             </>
           )}
         </button>
+        
+        {pensum && (
+          <button
+            onClick={() => setCurrentView('pensum')}
+            className="pensum-download-btn"
+          >
+            <FaGraduationCap /> Ver Pensum
+          </button>
+        )}
       </div>
     </div>
   );

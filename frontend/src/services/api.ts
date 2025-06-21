@@ -64,10 +64,31 @@ export interface LexerError {
   column: number;
 }
 
+// Pensum types
+export interface Curso {
+  codigo: string;
+  nombre: string;
+  creditos?: number;
+  prerrequisitos: string[];
+  semestre: number;
+}
+
+export interface Semestre {
+  semestre: number;
+  cursos: Curso[];
+}
+
+export interface Pensum {
+  carrera: string;
+  semestres: Semestre[];
+  cursos: Curso[];
+}
+
 export interface LexerResponse {
   success: boolean;
   data?: {
     tokens: Token[];
+    pensum?: Pensum;
     html?: string;
   };
   errors?: LexerError[];

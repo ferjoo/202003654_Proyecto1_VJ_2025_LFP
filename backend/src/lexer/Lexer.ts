@@ -32,6 +32,14 @@ export class Lexer {
             this.addError(`Símbolo de apertura '${lastBracket.char}' en línea ${lastBracket.line} no fue cerrado.`);
         }
 
+        // Agregar token EOF al final
+        this.tokens.push({
+            type: TokenType.EOF,
+            lexeme: '',
+            line: this.line,
+            column: this.column
+        });
+
         return {
             tokens: this.tokens,
             errors: this.errors
